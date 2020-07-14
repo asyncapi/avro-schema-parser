@@ -1,0 +1,62 @@
+{
+  "name": "@asyncapi/avro-schema-parser",
+  "version": "0.1.0",
+  "description": "An AsyncAPI schema parser for Avro 1.x schemas.",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "release": "semantic-release",
+    "lint": "eslint --config .eslintrc.yaml .",
+    "get-version": "echo $npm_package_version"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/asyncapi/avro-schema-parser.git"
+  },
+  "keywords": [
+    "asyncapi",
+    "avro",
+    "schema",
+    "parser"
+  ],
+  "author": "Fran Mendez (fmvilas.com)",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/asyncapi/avro-schema-parser/issues"
+  },
+  "homepage": "https://github.com/asyncapi/avro-schema-parser#readme",
+  "devDependencies": {
+    "@asyncapi/parser": "^0.25.1",
+    "@semantic-release/commit-analyzer": "^8.0.1",
+    "@semantic-release/github": "^7.0.4",
+    "@semantic-release/npm": "^7.0.3",
+    "@semantic-release/release-notes-generator": "^9.0.1",
+    "conventional-changelog-conventionalcommits": "^4.2.3",
+    "eslint": "^6.8.0",
+    "eslint-plugin-jest": "^23.18.0",
+    "eslint-plugin-sonarjs": "^0.5.0",
+    "jest": "^26.1.0",
+    "semantic-release": "^17.0.4"
+  },
+  "release": {
+    "branches": [
+      "master"
+    ],
+    "plugins": [
+      [
+        "@semantic-release/commit-analyzer",
+        {
+          "preset": "conventionalcommits"
+        }
+      ],
+      [
+        "@semantic-release/release-notes-generator",
+        {
+          "preset": "conventionalcommits"
+        }
+      ],
+      "@semantic-release/npm",
+      "@semantic-release/github"
+    ]
+  }
+}
