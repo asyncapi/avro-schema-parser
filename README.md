@@ -60,7 +60,7 @@ channels:
       message:
         schemaFormat: 'application/vnd.apache.avro;version=1.9.0'
         payload:
-          $ref: 'https://schema-registry.example.com/subjects/test/versions/1#/schema'
+          $ref: 'https://key:secret@schema-registry.example.com/subjects/test/versions/1/schema'
 `
 
 await parser.parse(asyncapiWithAvro)
