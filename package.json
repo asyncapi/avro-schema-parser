@@ -9,6 +9,9 @@
     "lint": "eslint --config .eslintrc.yaml .",
     "get-version": "echo $npm_package_version"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/asyncapi/avro-schema-parser.git"
