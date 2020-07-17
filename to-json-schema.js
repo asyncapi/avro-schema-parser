@@ -1,4 +1,6 @@
 const BYTES_PATTERN = '^[\u0000-\u00ff]*$';
+const INT_MIN = Math.pow(-2, 31);
+const INT_MAX = Math.pow(2, 31) - 1;
 const LONG_MIN = Math.pow(-2, 63);
 const LONG_MAX = Math.pow(2, 63) - 1;
 
@@ -20,13 +22,28 @@ const typeMappings = {
 
 module.exports.avroToJsonSchema = async function avroToJsonSchema(avroDefinition) {
   const jsonSchema = {};
+  const isUnion = Array.isArray(avroDefinition);
+
+  if (isUnion) {
+    jsonSchema.oneOf = [];
+    for (const avroDef of avroDefinition) {
+      const def = await avroToJsonSchema(avroDef);
+      jsonSchema.oneOf.push(def);
+    }
+
+    return jsonSchema;
+  }
+  
+  // Avro definition can be a string (e.g. "int")
+  // or an object like { type: "int" }
   const type = avroDefinition.type || avroDefinition;
-
-  jsonSchema.type = Array.isArray(type)
-    ? type.map(t => typeMappings[t] || 'object')
-    : typeMappings[type];
-
+  jsonSchema.type = typeMappings[type];
+  
   switch (type) {
+  case 'int':
+    jsonSchema.minimum = INT_MIN;
+    jsonSchema.maximum = INT_MAX;
+    break;
   case 'long':
     jsonSchema.minimum = LONG_MIN;
     jsonSchema.maximum = LONG_MAX;
