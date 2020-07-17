@@ -1,6 +1,8 @@
 const { avroToJsonSchema } = require('../to-json-schema');
 
 const BYTES_PATTERN = '^[\u0000-\u00ff]*$';
+const INT_MIN = Math.pow(-2, 31);
+const INT_MAX = Math.pow(2, 31) - 1;
 const LONG_MIN = Math.pow(-2, 63);
 const LONG_MAX = Math.pow(2, 63) - 1;
 
@@ -17,7 +19,7 @@ describe('avroToJsonSchema()', function () {
   
   it('transforms int values', async function () {
     const result = await avroToJsonSchema({ type: 'int' });
-    expect(result).toEqual({ type: 'integer' });
+    expect(result).toEqual({ type: 'integer', minimum: INT_MIN, maximum: INT_MAX });
   });
   
   it('transforms long values', async function () {
@@ -51,8 +53,8 @@ describe('avroToJsonSchema()', function () {
   });
   
   it('transforms union values', async function () {
-    const result = await avroToJsonSchema({ type: ['null', 'string'] });
-    expect(result).toEqual({ type: ['null', 'string'] });
+    const result = await avroToJsonSchema(['null', 'int']);
+    expect(result).toEqual({ oneOf: [{ type: 'null' }, { type: 'integer', minimum: INT_MIN, maximum: INT_MAX }] });
   });
   
   it('transforms map values', async function () {
@@ -101,10 +103,19 @@ describe('avroToJsonSchema()', function () {
   it('assigns default values correctly in types and fields', async function () {
     expect(
       await avroToJsonSchema({ type: 'int', default: 1 })
-    ).toEqual({ type: 'integer', default: 1 });
+    ).toEqual({ type: 'integer', minimum: INT_MIN, maximum: INT_MAX, default: 1 });
     
     expect(
       await avroToJsonSchema({ type: 'record', fields: [{ name: 'field1', type: 'string', default: 'AsyncAPI rocks!' }] })
     ).toEqual({ type: 'object', properties: { field1: { type: 'string', default: 'AsyncAPI rocks!' } } });
+  });
+  
+  it('treats array Avro documents as unions', async function () {
+    expect(
+      await avroToJsonSchema([{ type: 'int', default: 1 }, 'string'])
+    ).toEqual({ oneOf: [
+      { type: 'integer', minimum: INT_MIN, maximum: INT_MAX, default: 1 },
+      { type: 'string' },
+    ] });
   });
 });
