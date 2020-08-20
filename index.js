@@ -14,5 +14,8 @@ module.exports.getMimeTypes = () => {
     'application/vnd.apache.avro;version=1.9.0',
     'application/vnd.apache.avro+json;version=1.9.0',
     'application/vnd.apache.avro+yaml;version=1.9.0',
+    'application/vnd.apache.avro;version=1.8.2',
+    'application/vnd.apache.avro+json;version=1.8.2',
+    'application/vnd.apache.avro+yaml;version=1.8.2'
   ];
 };
