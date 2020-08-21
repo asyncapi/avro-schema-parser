@@ -41,41 +41,41 @@ module.exports.avroToJsonSchema = async function avroToJsonSchema(avroDefinition
   jsonSchema.type = typeMappings[type];
   
   switch (type) {
-    case 'int':
-      jsonSchema.minimum = INT_MIN;
-      jsonSchema.maximum = INT_MAX;
-      break;
-    case 'long':
-      jsonSchema.minimum = LONG_MIN;
-      jsonSchema.maximum = LONG_MAX;
-      break;
-    case 'bytes':
-      jsonSchema.pattern = BYTES_PATTERN;
-      break;
-    case 'fixed':
-      jsonSchema.pattern = BYTES_PATTERN;
-      jsonSchema.minLength = avroDefinition.size;
-      jsonSchema.maxLength = avroDefinition.size;
-      break;
-    case 'map':
-      jsonSchema.additionalProperties = await avroToJsonSchema(avroDefinition.values);
-      break;
-    case 'array':
-      jsonSchema.items = await avroToJsonSchema(avroDefinition.items);
-      break;
-    case 'enum':
-      jsonSchema.enum = avroDefinition.symbols;
-      break;
-    case 'record':
-      const propsMap = new Map();
-      for (const field of avroDefinition.fields) {
-        const def = await avroToJsonSchema(field.type);
-        if (field.doc) def.description = field.doc;
-        if (field.default) def.default = field.default;
-        propsMap.set(field.name, def);
-      }
-      jsonSchema.properties = Object.fromEntries(propsMap.entries());
-      break;
+  case 'int':
+    jsonSchema.minimum = INT_MIN;
+    jsonSchema.maximum = INT_MAX;
+    break;
+  case 'long':
+    jsonSchema.minimum = LONG_MIN;
+    jsonSchema.maximum = LONG_MAX;
+    break;
+  case 'bytes':
+    jsonSchema.pattern = BYTES_PATTERN;
+    break;
+  case 'fixed':
+    jsonSchema.pattern = BYTES_PATTERN;
+    jsonSchema.minLength = avroDefinition.size;
+    jsonSchema.maxLength = avroDefinition.size;
+    break;
+  case 'map':
+    jsonSchema.additionalProperties = await avroToJsonSchema(avroDefinition.values);
+    break;
+  case 'array':
+    jsonSchema.items = await avroToJsonSchema(avroDefinition.items);
+    break;
+  case 'enum':
+    jsonSchema.enum = avroDefinition.symbols;
+    break;
+  case 'record':
+    const propsMap = new Map();
+    for (const field of avroDefinition.fields) {
+      const def = await avroToJsonSchema(field.type);
+      if (field.doc) def.description = field.doc;
+      if (field.default) def.default = field.default;
+      propsMap.set(field.name, def);
+    }
+    jsonSchema.properties = Object.fromEntries(propsMap.entries());
+    break;
   }
 
   if (avroDefinition.doc) jsonSchema.description = avroDefinition.doc;
