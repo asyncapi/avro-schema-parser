@@ -18,6 +18,7 @@ const typeMappings = {
   array: 'array',
   enum: 'string',
   record: 'object',
+  uuid: 'string',
 };
 
 module.exports.avroToJsonSchema = async function avroToJsonSchema(avroDefinition) {

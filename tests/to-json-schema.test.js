@@ -46,6 +46,11 @@ describe('avroToJsonSchema()', function () {
     const result = await avroToJsonSchema({ type: 'string' });
     expect(result).toEqual({ type: 'string' });
   });
+
+  it('transforms uuid values', async function () {
+    const result = await avroToJsonSchema({ type: 'uuid' });
+    expect(result).toEqual({ type: 'string' });
+  });
   
   it('transforms fixed values', async function () {
     const result = await avroToJsonSchema({ type: 'fixed', size: 5 });
