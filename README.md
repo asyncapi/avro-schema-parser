@@ -66,6 +66,31 @@ channels:
 await parser.parse(asyncapiWithAvro)
 ```
 
+### Usage with local references
+
+```js
+const parser = require('@asyncapi/parser')
+const avroSchemaParser = require('@asyncapi/avro-schema-parser')
+
+parser.registerSchemaParser(avroSchemaParser)
+
+const asyncapiWithAvro = `
+asyncapi: 2.0.0
+info:
+  title: Example with Avro
+  version: 0.1.0
+channels:
+  example:
+    publish:
+      message:
+        schemaFormat: 'application/vnd.apache.avro;version=1.9.0'
+        payload:
+          $ref: 'local/path/to/file/user'
+`
+
+await parser.parse(asyncapiWithAvro)
+```
+
 ### Usage with Confluent Schema Registry
 
 #### Create an API key
