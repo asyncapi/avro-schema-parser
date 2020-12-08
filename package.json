@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest",
     "release": "semantic-release",
-    "lint": "eslint --config .eslintrc.yaml .",
+    "lint": "eslint --max-warnings 0 --config .eslintrc.yaml .",
     "get-version": "echo $npm_package_version"
   },
   "publishConfig": {
