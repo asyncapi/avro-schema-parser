@@ -32,17 +32,17 @@
   },
   "homepage": "https://github.com/asyncapi/avro-schema-parser#readme",
   "devDependencies": {
-    "@asyncapi/parser": "^1.4.5",
+    "@asyncapi/parser": "^1.5.0",
     "@semantic-release/commit-analyzer": "^8.0.1",
     "@semantic-release/github": "^7.0.4",
-    "@semantic-release/npm": "^7.0.3",
+    "@semantic-release/npm": "^7.1.1",
     "@semantic-release/release-notes-generator": "^9.0.1",
-    "conventional-changelog-conventionalcommits": "^4.2.3",
+    "conventional-changelog-conventionalcommits": "^4.5.0",
     "eslint": "^6.8.0",
     "eslint-plugin-jest": "^23.18.0",
     "eslint-plugin-sonarjs": "^0.5.0",
     "jest": "^26.1.0",
-    "semantic-release": "^17.0.4"
+    "semantic-release": "^17.4.2"
   },
   "release": {
     "branches": [
