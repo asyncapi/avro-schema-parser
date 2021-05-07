@@ -3,7 +3,7 @@
   "type": "record",
   "fields": [
     {"name": "name", "type": "string", example: "Donkey"},
-    {"name": "age", "type": ["null", "int"], "default": null},
+    {"name": "age", "type": ["null", "int"], "default": null, example: "123"},
     {
       "name": "favoriteProgrammingLanguage",
       "type": {"name": "ProgrammingLanguage", "type": "enum", "symbols": ["JS", "Java", "Go", "Rust", "C"], "default": "JS"}
