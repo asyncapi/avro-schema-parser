@@ -59,7 +59,7 @@ describe('avroToJsonSchema()', function () {
   
   it('transforms union values', async function () {
     const result = await avroToJsonSchema(['null', 'int']);
-    expect(result).toEqual({ oneOf: [{ type: 'null' }, { type: 'integer', minimum: INT_MIN, maximum: INT_MAX }] });
+    expect(result).toEqual({ oneOf: [{ type: 'integer', minimum: INT_MIN, maximum: INT_MAX }, { type: 'null' }] });
   });
   
   it('transforms map values', async function () {
