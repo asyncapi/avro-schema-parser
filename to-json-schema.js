@@ -21,6 +21,21 @@ const typeMappings = {
   uuid: 'string',
 };
 
+const exampleMapping = (type, example, jsonSchema) => {
+  if (example === undefined || jsonSchema.examples) return;
+
+  switch (type) {
+  case 'boolean':
+    jsonSchema.examples = [example === 'true'];
+    break;
+  case 'int':
+    jsonSchema.examples = [parseInt(example, 10)];
+    break;
+  default:
+    jsonSchema.examples = [example];
+  }
+};
+
 module.exports.avroToJsonSchema = async function avroToJsonSchema(avroDefinition) {
   const jsonSchema = {};
   const isUnion = Array.isArray(avroDefinition);
@@ -72,6 +87,7 @@ module.exports.avroToJsonSchema = async function avroToJsonSchema(avroDefinition
       const def = await avroToJsonSchema(field.type);
       if (field.doc) def.description = field.doc;
       if (field.default) def.default = field.default;
+      exampleMapping(field.type, field.example, def);
       propsMap.set(field.name, def);
     }
     jsonSchema.properties = Object.fromEntries(propsMap.entries());
@@ -80,6 +96,7 @@ module.exports.avroToJsonSchema = async function avroToJsonSchema(avroDefinition
 
   if (avroDefinition.doc) jsonSchema.description = avroDefinition.doc;
   if (avroDefinition.default !== undefined) jsonSchema.default = avroDefinition.default;
+  exampleMapping(type, avroDefinition.example, jsonSchema);
 
   return jsonSchema;
 };
