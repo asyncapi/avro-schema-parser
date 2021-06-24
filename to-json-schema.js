@@ -21,16 +21,36 @@ const typeMappings = {
   uuid: 'string',
 };
 
+const exampleMapping = (type, example, jsonSchema) => {
+  if (example === undefined || jsonSchema.examples || Array.isArray(type)) return;
+
+  switch (type) {
+  case 'boolean':
+    jsonSchema.examples = [example === 'true'];
+    break;
+  case 'int':
+    jsonSchema.examples = [parseInt(example, 10)];
+    break;
+  default:
+    jsonSchema.examples = [example];
+  }
+};
+
 module.exports.avroToJsonSchema = async function avroToJsonSchema(avroDefinition) {
   const jsonSchema = {};
   const isUnion = Array.isArray(avroDefinition);
 
   if (isUnion) {
     jsonSchema.oneOf = [];
+    let nullDef = null;
     for (const avroDef of avroDefinition) {
       const def = await avroToJsonSchema(avroDef);
-      jsonSchema.oneOf.push(def);
+      const defType = avroDef.type || avroDef;
+      // To prefer non-null values in the examples put null as the last element
+      if (defType === 'null') nullDef = def; else jsonSchema.oneOf.push(def);
     }
+
+    if (nullDef) jsonSchema.oneOf.push(nullDef);
 
     return jsonSchema;
   }
@@ -72,6 +92,13 @@ module.exports.avroToJsonSchema = async function avroToJsonSchema(avroDefinition
       const def = await avroToJsonSchema(field.type);
       if (field.doc) def.description = field.doc;
       if (field.default) def.default = field.default;
+
+      // Map example to first non-null type
+      if (Array.isArray(field.type) && field.type.length > 0) {
+        const pickSecondType = field.type.length > 1 && field.type[0] === 'null';
+        exampleMapping(field.type[+pickSecondType], field.example, def.oneOf[0]);
+      } else exampleMapping(field.type, field.example, def);
+
       propsMap.set(field.name, def);
     }
     jsonSchema.properties = Object.fromEntries(propsMap.entries());
@@ -80,6 +107,7 @@ module.exports.avroToJsonSchema = async function avroToJsonSchema(avroDefinition
 
   if (avroDefinition.doc) jsonSchema.description = avroDefinition.doc;
   if (avroDefinition.default !== undefined) jsonSchema.default = avroDefinition.default;
+  exampleMapping(type, avroDefinition.example, jsonSchema);
 
   return jsonSchema;
 };
