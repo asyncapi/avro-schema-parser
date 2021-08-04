@@ -36,7 +36,7 @@ const exampleAttributeMapping = (typeInput, example, jsonSchemaInput) => {
     type = typeInput[+pickSecondType];
     jsonSchema = jsonSchema.oneOf[0];
   }
-  
+
   if (example === undefined || jsonSchema.examples || Array.isArray(type)) return;
 
   switch (type) {
@@ -60,8 +60,9 @@ module.exports.avroToJsonSchema = async function avroToJsonSchema(avroDefinition
     let nullDef = null;
     for (const avroDef of avroDefinition) {
       const def = await avroToJsonSchema(avroDef);
+      // avroDef can be { type: 'int', default: 1 } and this is why avroDef.type has priority here
       const defType = avroDef.type || avroDef;
-      // To prefer non-null values in the examples put null as the last element
+      // To prefer non-null values in the examples skip null definition here and push it as the last element after loop
       if (defType === 'null') nullDef = def; else jsonSchema.oneOf.push(def);
     }
 
@@ -69,12 +70,12 @@ module.exports.avroToJsonSchema = async function avroToJsonSchema(avroDefinition
 
     return jsonSchema;
   }
-  
+
   // Avro definition can be a string (e.g. "int")
   // or an object like { type: "int" }
   const type = avroDefinition.type || avroDefinition;
   jsonSchema.type = typeMappings[type];
-  
+
   switch (type) {
   case 'int':
     jsonSchema.minimum = INT_MIN;
@@ -105,7 +106,7 @@ module.exports.avroToJsonSchema = async function avroToJsonSchema(avroDefinition
     const propsMap = new Map();
     for (const field of avroDefinition.fields) {
       const def = await avroToJsonSchema(field.type);
-      
+
       commonAttributesMapping(field, def);
       exampleAttributeMapping(field.type, field.example, def);
 
