@@ -126,6 +126,16 @@ channels:
 await parser.parse(asyncapiWithAvro)
 ```
 
+## Features
+
+### Support for extra attributes on top of Avro specification
+
+Additional attributes not defined in the [Avro Specification](https://avro.apache.org/docs/current/spec.html) are permitted and are treated as a metadata by the specification. To improve human readability of generated AsyncAPI documentation and to leverage more features from the JSON schema we included support for the extra attributes that can be added into Avro document.
+
+#### List of all supported extra attributes
+
+- `example` - Can be used to define the example value from the business domain of given field. Value will be propagated into [examples attribute](https://json-schema.org/draft/2020-12/json-schema-validation.html#rfc.section.9.5) of JSON schema and therefore will be picked for the generated "Example of payload" when using some AsyncAPI documentation generator.
+
 ## Limitations
 
 ### Float and double-precision numbers
