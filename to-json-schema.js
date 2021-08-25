@@ -21,9 +21,10 @@ const typeMappings = {
   uuid: 'string',
 };
 
-const commonAttributesMapping = (avroDefinition, jsonSchema) => {
+const commonAttributesMapping = (avroDefinition, jsonSchema, isTopLevel) => {
   if (avroDefinition.doc) jsonSchema.description = avroDefinition.doc;
   if (avroDefinition.default !== undefined) jsonSchema.default = avroDefinition.default;
+  if (isTopLevel && avroDefinition.name !== undefined) jsonSchema.title = avroDefinition.name;
 };
 
 const exampleAttributeMapping = (typeInput, example, jsonSchemaInput) => {
@@ -51,7 +52,7 @@ const exampleAttributeMapping = (typeInput, example, jsonSchemaInput) => {
   }
 };
 
-module.exports.avroToJsonSchema = async function avroToJsonSchema(avroDefinition) {
+async function convertAvroToJsonSchema(avroDefinition, isTopLevel) {
   const jsonSchema = {};
   const isUnion = Array.isArray(avroDefinition);
 
@@ -59,7 +60,7 @@ module.exports.avroToJsonSchema = async function avroToJsonSchema(avroDefinition
     jsonSchema.oneOf = [];
     let nullDef = null;
     for (const avroDef of avroDefinition) {
-      const def = await avroToJsonSchema(avroDef);
+      const def = await convertAvroToJsonSchema(avroDef, isTopLevel);
       // avroDef can be { type: 'int', default: 1 } and this is why avroDef.type has priority here
       const defType = avroDef.type || avroDef;
       // To prefer non-null values in the examples skip null definition here and push it as the last element after loop
@@ -94,10 +95,10 @@ module.exports.avroToJsonSchema = async function avroToJsonSchema(avroDefinition
     jsonSchema.maxLength = avroDefinition.size;
     break;
   case 'map':
-    jsonSchema.additionalProperties = await avroToJsonSchema(avroDefinition.values);
+    jsonSchema.additionalProperties = await convertAvroToJsonSchema(avroDefinition.values, false);
     break;
   case 'array':
-    jsonSchema.items = await avroToJsonSchema(avroDefinition.items);
+    jsonSchema.items = await convertAvroToJsonSchema(avroDefinition.items, false);
     break;
   case 'enum':
     jsonSchema.enum = avroDefinition.symbols;
@@ -105,9 +106,9 @@ module.exports.avroToJsonSchema = async function avroToJsonSchema(avroDefinition
   case 'record':
     const propsMap = new Map();
     for (const field of avroDefinition.fields) {
-      const def = await avroToJsonSchema(field.type);
+      const def = await convertAvroToJsonSchema(field.type, false);
 
-      commonAttributesMapping(field, def);
+      commonAttributesMapping(field, def, false);
       exampleAttributeMapping(field.type, field.example, def);
 
       propsMap.set(field.name, def);
@@ -116,8 +117,12 @@ module.exports.avroToJsonSchema = async function avroToJsonSchema(avroDefinition
     break;
   }
 
-  commonAttributesMapping(avroDefinition, jsonSchema);
+  commonAttributesMapping(avroDefinition, jsonSchema, isTopLevel);
   exampleAttributeMapping(type, avroDefinition.example, jsonSchema);
 
   return jsonSchema;
+};
+
+module.exports.avroToJsonSchema = async function avroToJsonSchema(avroDefinition) {
+  return await convertAvroToJsonSchema(avroDefinition, true);
 };
