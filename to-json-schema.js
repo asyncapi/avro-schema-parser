@@ -121,8 +121,8 @@ async function convertAvroToJsonSchema(avroDefinition, isTopLevel) {
   exampleAttributeMapping(type, avroDefinition.example, jsonSchema);
 
   return jsonSchema;
-};
+}
 
 module.exports.avroToJsonSchema = async function avroToJsonSchema(avroDefinition) {
-  return await convertAvroToJsonSchema(avroDefinition, true);
+  return convertAvroToJsonSchema(avroDefinition, true);
 };
