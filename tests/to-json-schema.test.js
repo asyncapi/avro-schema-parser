@@ -89,8 +89,8 @@ describe('avroToJsonSchema()', function () {
     });
     expect(result).toEqual({
       type: 'object',
+      'x-parser-schema-id': 'MyName',
       description: 'My test record',
-      title: 'MyName',
       properties: {
         key1: {
           type: 'integer',

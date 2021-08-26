@@ -24,7 +24,9 @@ const typeMappings = {
 const commonAttributesMapping = (avroDefinition, jsonSchema, isTopLevel) => {
   if (avroDefinition.doc) jsonSchema.description = avroDefinition.doc;
   if (avroDefinition.default !== undefined) jsonSchema.default = avroDefinition.default;
-  if (isTopLevel && avroDefinition.name !== undefined) jsonSchema.title = avroDefinition.name;
+  if (isTopLevel && avroDefinition.name !== undefined) {
+    jsonSchema['x-parser-schema-id'] = avroDefinition.name;
+  }
 };
 
 const exampleAttributeMapping = (typeInput, example, jsonSchemaInput) => {
