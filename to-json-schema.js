@@ -24,10 +24,26 @@ const typeMappings = {
 const commonAttributesMapping = (avroDefinition, jsonSchema, isTopLevel) => {
   if (avroDefinition.doc) jsonSchema.description = avroDefinition.doc;
   if (avroDefinition.default !== undefined) jsonSchema.default = avroDefinition.default;
-  if (isTopLevel && avroDefinition.name !== undefined) {
-    jsonSchema['x-parser-schema-id'] = avroDefinition.name;
+
+  const fullyQualifiedName = getFullyQualifiedName(avroDefinition);
+  if (isTopLevel && fullyQualifiedName !== undefined) {
+    jsonSchema['x-parser-schema-id'] = fullyQualifiedName;
   }
 };
+
+function getFullyQualifiedName(avroDefinition) {
+  let ret;
+
+  if (avroDefinition.name) {
+    if (avroDefinition.namespace) {
+      ret = `${avroDefinition.namespace}.${avroDefinition.name}`;
+    } else {
+      ret = avroDefinition.name;
+    }
+  }
+
+  return ret;
+}
 
 const exampleAttributeMapping = (typeInput, example, jsonSchemaInput) => {
   let type = typeInput;

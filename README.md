@@ -28,6 +28,8 @@ channels:
         schemaFormat: 'application/vnd.apache.avro;version=1.9.0'
         payload: # The following is an Avro schema in YAML format (JSON format is also supported)
           type: record
+          name: User
+          namespace: com.company
           doc: User information
           fields:
             - name: displayName
@@ -135,6 +137,14 @@ Additional attributes not defined in the [Avro Specification](https://avro.apach
 #### List of all supported extra attributes
 
 - `example` - Can be used to define the example value from the business domain of given field. Value will be propagated into [examples attribute](https://json-schema.org/draft/2020-12/json-schema-validation.html#rfc.section.9.5) of JSON schema and therefore will be picked for the generated "Example of payload" when using some AsyncAPI documentation generator.
+
+### Support for names and namespaces
+
+If, at the top level of the Avro schema, the 'name' attribute is defined, it will be copied to the corresponding Json schema's 'x-parser-schema-id' attribute. If the Avro schema also has the 'namespace' attribute defined, then that schema's fully qualified name will be put into that attribute. The fully qualified name is defined by the namespace, followed by a dot, followed by the name.
+
+If there are two schemas that resolve to the same fully qualified name, only the second will be returnd by the parser.
+
+If no name attribute is present, the 'x-parser-schema-id' will have a generated unique id.
 
 ## Limitations
 
