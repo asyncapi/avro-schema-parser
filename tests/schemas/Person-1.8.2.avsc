@@ -1,7 +1,7 @@
 {
   "type": "record",
   "fields": [
-    {"name": "name", "type": "string", example: "Donkey"},
+    {"name": "name", "type": "string", "example": "Donkey"},
     {"name": "age", "type": ["null", "int"], "default": null},
     {
       "name": "favoriteProgrammingLanguage",
@@ -12,7 +12,7 @@
       "type": {
         "name": "Address",
         "type": "record",
-        "fields": [{"name": "zipcode", "type": "int", example: "53003"}]
+        "fields": [{"name": "zipcode", "type": "int", "example": "53003"}]
       }
     }
   ]

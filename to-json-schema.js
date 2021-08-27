@@ -32,17 +32,17 @@ const commonAttributesMapping = (avroDefinition, jsonSchema, isTopLevel) => {
 };
 
 function getFullyQualifiedName(avroDefinition) {
-  let ret;
+  let name;
 
   if (avroDefinition.name) {
     if (avroDefinition.namespace) {
-      ret = `${avroDefinition.namespace}.${avroDefinition.name}`;
+      name = `${avroDefinition.namespace}.${avroDefinition.name}`;
     } else {
-      ret = avroDefinition.name;
+      name = avroDefinition.name;
     }
   }
 
-  return ret;
+  return name;
 }
 
 const exampleAttributeMapping = (typeInput, example, jsonSchemaInput) => {
