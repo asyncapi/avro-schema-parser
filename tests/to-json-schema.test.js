@@ -81,6 +81,7 @@ describe('avroToJsonSchema()', function () {
     const result = await avroToJsonSchema({
       type: 'record',
       doc: 'My test record',
+      name: 'MyName',
       fields: [
         { name: 'key1', type: 'long', doc: 'Key1 docs' },
         { name: 'key2', type: 'string', default: 'value2', doc: 'Key2 docs' },
@@ -88,6 +89,7 @@ describe('avroToJsonSchema()', function () {
     });
     expect(result).toEqual({
       type: 'object',
+      'x-parser-schema-id': 'MyName',
       description: 'My test record',
       properties: {
         key1: {
