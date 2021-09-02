@@ -26,7 +26,7 @@ const commonAttributesMapping = (avroDefinition, jsonSchema, isTopLevel) => {
   if (avroDefinition.default !== undefined) jsonSchema.default = avroDefinition.default;
 
   const fullyQualifiedName = getFullyQualifiedName(avroDefinition);
-  if (isTopLevel && fullyQualifiedName) {
+  if (isTopLevel && fullyQualifiedName !== undefined) {
     jsonSchema['x-parser-schema-id'] = fullyQualifiedName;
   }
 };
