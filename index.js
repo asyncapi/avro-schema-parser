@@ -7,6 +7,19 @@ module.exports.parse = async ({ message, defaultSchemaFormat }) => {
   message['x-parser-original-payload'] = message.payload;
   message.payload = transformed;
   delete message.schemaFormat;
+
+  async function handleProtocolKey() {
+    for (const protocol of Object.keys(message.bindings)) {
+      var key = message.bindings[protocol].key;
+      if (key) {
+        const bindingsTransformed = await avroToJsonSchema(key);
+        message[`x-parser-original-bindings-${protocol}-key`] = key;
+        message.bindings[protocol].key = bindingsTransformed;
+      }
+    }
+  }
+
+  await handleProtocolKey();
 };
 
 module.exports.getMimeTypes = () => {
