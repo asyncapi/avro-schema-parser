@@ -8,18 +8,18 @@ module.exports.parse = async ({ message, defaultSchemaFormat }) => {
   message.payload = transformed;
   delete message.schemaFormat;
 
-  async function handleProtocolKey() {
-    for (const protocol of Object.keys(message.bindings)) {
-      var key = message.bindings[protocol].key;
+  async function handleKafkaProtocolKey() {
+    if (message.bindings && message.bindings.kafka) {
+      var key = message.bindings.kafka.key;
       if (key) {
         const bindingsTransformed = await avroToJsonSchema(key);
-        message[`x-parser-original-bindings-${protocol}-key`] = key;
-        message.bindings[protocol].key = bindingsTransformed;
+        message[`x-parser-original-bindings-kafka-key`] = key;
+        message.bindings.kafka.key = bindingsTransformed;
       }
     }
   }
 
-  await handleProtocolKey();
+  await handleKafkaProtocolKey();
 };
 
 module.exports.getMimeTypes = () => {
