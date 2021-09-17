@@ -10,10 +10,10 @@ module.exports.parse = async ({ message, defaultSchemaFormat }) => {
 
   async function handleKafkaProtocolKey() {
     if (message.bindings && message.bindings.kafka) {
-      var key = message.bindings.kafka.key;
+      const key = message.bindings.kafka.key;
       if (key) {
         const bindingsTransformed = await avroToJsonSchema(key);
-        message[`x-parser-original-bindings-kafka-key`] = key;
+        message['x-parser-original-bindings-kafka-key'] = key;
         message.bindings.kafka.key = bindingsTransformed;
       }
     }
