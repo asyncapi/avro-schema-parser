@@ -8,6 +8,7 @@ module.exports.parse = async ({ message, defaultSchemaFormat }) => {
   message.payload = transformed;
   delete message.schemaFormat;
 
+  // remove that function when https://github.com/asyncapi/spec/issues/622 will be introduced in AsyncAPI spec
   async function handleKafkaProtocolKey() {
     if (message.bindings && message.bindings.kafka) {
       const key = message.bindings.kafka.key;
