@@ -25,6 +25,6 @@
     },
     {"name": "weight", "type": "float", "example": "65.0", "minimum": 0, "maximum": 500},
     {"name": "height", "type": "double", "example": "1.85", "minimum": 0, "maximum": 3.0},
-    {"name": "someid", "type": "uuid"}
+    {"name": "someid", "type": "string", logicalType: "uuid"}
   ]
 }

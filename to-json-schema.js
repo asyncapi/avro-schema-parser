@@ -107,6 +107,7 @@ const additionalAttributesMapping = (typeInput, avroDefinition, jsonSchemaInput)
     if (avroDefinition.exclusiveMaximum !== undefined) jsonSchema.exclusiveMaximum = avroDefinition.exclusiveMaximum;
     break;
   case 'string':
+    jsonSchema.format= avroDefinition.logicalType;
   case 'fixed':
     if (avroDefinition.pattern) jsonSchema.pattern = avroDefinition.pattern;
     if (avroDefinition.minLength !== undefined && avroDefinition.minLength > -1) jsonSchema.minLength = avroDefinition.minLength;
