@@ -95,28 +95,39 @@ const additionalAttributesMapping = (typeInput, avroDefinition, jsonSchemaInput)
 
   exampleAttributeMapping(type, avroDefinition.example, jsonSchema);
 
+  function setAdditionalAttribute(name) {
+    let isValueCoherent = true;
+    if (name === 'minLength' || name === 'maxLength') {
+      isValueCoherent = avroDefinition[name] > -1;
+    } else if (name === 'multipleOf') {
+      isValueCoherent = avroDefinition[name] > 0;
+    }
+    if (avroDefinition[name] !== undefined && isValueCoherent) jsonSchema[name] = avroDefinition[name];
+  }
+
   switch (type) {
   case 'int':
   case 'long':
   case 'float':
   case 'double':
-    if (avroDefinition.minimum !== undefined) jsonSchema.minimum = avroDefinition.minimum;
-    if (avroDefinition.multipleOf !== undefined && avroDefinition.multipleOf > 0) jsonSchema.multipleOf = avroDefinition.multipleOf;
-    if (avroDefinition.maximum !== undefined) jsonSchema.maximum = avroDefinition.maximum;
-    if (avroDefinition.exclusiveMinimum !== undefined) jsonSchema.exclusiveMinimum = avroDefinition.exclusiveMinimum;
-    if (avroDefinition.exclusiveMaximum !== undefined) jsonSchema.exclusiveMaximum = avroDefinition.exclusiveMaximum;
+    setAdditionalAttribute('minimum');
+    setAdditionalAttribute('maximum');
+    setAdditionalAttribute('exclusiveMinimum');
+    setAdditionalAttribute('exclusiveMaximum');
+    setAdditionalAttribute('multipleOf');
     break;
   case 'string':
-    jsonSchema.format= avroDefinition.logicalType;
-  case 'fixed':
-    if (avroDefinition.pattern) jsonSchema.pattern = avroDefinition.pattern;
-    if (avroDefinition.minLength !== undefined && avroDefinition.minLength > -1) jsonSchema.minLength = avroDefinition.minLength;
-    if (avroDefinition.maxLength !== undefined  && avroDefinition.maxLength > -1) jsonSchema.maxLength = avroDefinition.maxLength;
+    jsonSchema.format = avroDefinition.logicalType;
+    setAdditionalAttribute('pattern');
+    setAdditionalAttribute('minLength');
+    setAdditionalAttribute('maxLength');
     break;
   case 'array':
-    if (avroDefinition.minItems !== undefined && avroDefinition.minItems > -1) jsonSchema.minItems = avroDefinition.minItems;
-    if (avroDefinition.maxItems !== undefined && avroDefinition.maxItems > -1) jsonSchema.maxItems = avroDefinition.maxItems;
-    if (avroDefinition.uniqueItems !== undefined) jsonSchema.uniqueItems = avroDefinition.uniqueItems;
+    setAdditionalAttribute('minItems');
+    setAdditionalAttribute('maxItems');
+    setAdditionalAttribute('uniqueItems');
+    break;
+  default:
     break;
   }
 };

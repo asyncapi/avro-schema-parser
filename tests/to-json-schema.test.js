@@ -248,11 +248,6 @@ describe('additionalAttributesMapping()', function () {
     expect(result).toEqual({type: 'string'});
   });
 
-  it('support pattern, minLength and maxLength for fixed', async function () {
-    const result = await avroToJsonSchema({type: 'fixed', pattern: '$pattern^', minLength: 1, maxLength: 10});
-    expect(result).toEqual({type: 'string', pattern: '$pattern^', minLength: 1, maxLength: 10});
-  });
-
   it('support minItems and maxItems for array', async function () {
     const result = await avroToJsonSchema({type: 'array', items: 'long', minItems: 0, maxItems: 10});
     expect(result).toMatchObject({type: 'array', items: {type: 'integer'}, minItems: 0, maxItems: 10});
