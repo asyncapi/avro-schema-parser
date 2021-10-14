@@ -95,37 +95,31 @@ const additionalAttributesMapping = (typeInput, avroDefinition, jsonSchemaInput)
 
   exampleAttributeMapping(type, avroDefinition.example, jsonSchema);
 
-  function setAdditionalAttribute(name) {
-    let isValueCoherent = true;
-    if (name === 'minLength' || name === 'maxLength') {
-      isValueCoherent = avroDefinition[name] > -1;
-    } else if (name === 'multipleOf') {
-      isValueCoherent = avroDefinition[name] > 0;
-    }
-    if (avroDefinition[name] !== undefined && isValueCoherent) jsonSchema[name] = avroDefinition[name];
+  function setAdditionalAttribute(...names) {
+    names.forEach(name => {
+      let isValueCoherent = true;
+      if (name === 'minLength' || name === 'maxLength') {
+        isValueCoherent = avroDefinition[name] > -1;
+      } else if (name === 'multipleOf') {
+        isValueCoherent = avroDefinition[name] > 0;
+      }
+      if (avroDefinition[name] !== undefined && isValueCoherent) jsonSchema[name] = avroDefinition[name];
+    });
   }
 
   switch (type) {
-  case 'int':
+  case 'int':   // int, long, float, and double must support the attributes bellow
   case 'long':
   case 'float':
   case 'double':
-    setAdditionalAttribute('minimum');
-    setAdditionalAttribute('maximum');
-    setAdditionalAttribute('exclusiveMinimum');
-    setAdditionalAttribute('exclusiveMaximum');
-    setAdditionalAttribute('multipleOf');
+    setAdditionalAttribute('minimum', 'maximum', 'exclusiveMinimum', 'exclusiveMaximum', 'multipleOf');
     break;
   case 'string':
     jsonSchema.format = avroDefinition.logicalType;
-    setAdditionalAttribute('pattern');
-    setAdditionalAttribute('minLength');
-    setAdditionalAttribute('maxLength');
+    setAdditionalAttribute('pattern', 'minLength', 'maxLength');
     break;
   case 'array':
-    setAdditionalAttribute('minItems');
-    setAdditionalAttribute('maxItems');
-    setAdditionalAttribute('uniqueItems');
+    setAdditionalAttribute('minItems', 'maxItems', 'uniqueItems');
     break;
   default:
     break;
@@ -182,7 +176,7 @@ async function convertAvroToJsonSchema(avroDefinition, isTopLevel) {
   case 'enum':
     jsonSchema.enum = avroDefinition.symbols;
     break;
-  case 'float':
+  case 'float':   // float and double must support the format attribute from the avro type
   case 'double':
     jsonSchema.format = type;
     break;
