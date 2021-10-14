@@ -218,23 +218,19 @@ describe('additionalAttributesMapping()', function () {
     expect(result).toMatchObject({type: 'number', format: 'double', exclusiveMinimum: 0, exclusiveMaximum: 10});
   });
 
-  it('support minimum and maximum for int', async function () {
-    const result = await avroToJsonSchema({type: 'int', minimum: 0, maximum: 10});
+  it('support minimum and maximum for long and int', async function () {
+    let result = await avroToJsonSchema({type: 'long', minimum: 0, maximum: 10});
+    expect(result).toEqual({type: 'integer', minimum: 0, maximum: 10});
+
+    result = await avroToJsonSchema({type: 'int', minimum: 0, maximum: 10});
     expect(result).toEqual({type: 'integer', minimum: 0, maximum: 10});
   });
 
-  it('support exclusiveMinimum and exclusiveMaximum for int', async function () {
-    const result = await avroToJsonSchema({type: 'int', exclusiveMinimum: 0, exclusiveMaximum: 10});
+  it('long and int type support exclusiveMinimum and exclusiveMaximum', async function () {
+    let result = await avroToJsonSchema({type: 'long', exclusiveMinimum: 0, exclusiveMaximum: 10});
     expect(result).toMatchObject({type: 'integer', exclusiveMinimum: 0, exclusiveMaximum: 10});
-  });
 
-  it('support minimum and maximum for long', async function () {
-    const result = await avroToJsonSchema({type: 'long', minimum: 0, maximum: 10});
-    expect(result).toEqual({type: 'integer', minimum: 0, maximum: 10});
-  });
-
-  it('support exclusiveMinimum and exclusiveMaximum for long', async function () {
-    const result = await avroToJsonSchema({type: 'long', exclusiveMinimum: 0, exclusiveMaximum: 10});
+    result = await avroToJsonSchema({type: 'int', exclusiveMinimum: 0, exclusiveMaximum: 10});
     expect(result).toMatchObject({type: 'integer', exclusiveMinimum: 0, exclusiveMaximum: 10});
   });
 
