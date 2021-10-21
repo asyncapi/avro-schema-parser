@@ -132,7 +132,7 @@ await parser.parse(asyncapiWithAvro)
 
 ### Support of required attributes
 
-We assume that required fields are fields with no default value and without the `"null"` union element.
+Required fields are fields with no default value and without the `"null"` union element.
 
 ### Support for extra attributes on top of Avro specification
 
