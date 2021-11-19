@@ -1,3 +1,5 @@
+const avsc = require('avsc');
+
 const BYTES_PATTERN = '^[\u0000-\u00ff]*$';
 const INT_MIN = Math.pow(-2, 31);
 const INT_MAX = Math.pow(2, 31) - 1;
@@ -126,9 +128,19 @@ const additionalAttributesMapping = (typeInput, avroDefinition, jsonSchemaInput)
   }
 };
 
+function validateAvroSchema(avroDefinition) {
+  // don't need to use the output from parsing the
+  //  avro definition - we're just using this as a
+  //  validator as this will throw an exception if
+  //  there are any problems with the definition
+  avsc.Type.forSchema(avroDefinition);
+}
+
 async function convertAvroToJsonSchema(avroDefinition, isTopLevel) {
   const jsonSchema = {};
   const isUnion = Array.isArray(avroDefinition);
+
+  validateAvroSchema(avroDefinition);
 
   if (isUnion) {
     jsonSchema.oneOf = [];

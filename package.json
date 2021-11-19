@@ -62,5 +62,8 @@
       "@semantic-release/npm",
       "@semantic-release/github"
     ]
+  },
+  "dependencies": {
+    "avsc": "^5.7.3"
   }
 }

@@ -130,6 +130,38 @@ await parser.parse(asyncapiWithAvro)
 
 ## Features
 
+### Validation of Avro schemas
+
+Avro schemas included in parsed AsyncAPI documents are validated using [avsc](https://www.npmjs.com/package/avsc). Invalid Avro schemas will cause the `parse` function to reject the promise, with an error that explains the problem.
+
+```js
+const assert = require('assert');
+const parser = require('@asyncapi/parser');
+const avroSchemaParser = require('./index');
+
+parser.registerSchemaParser(avroSchemaParser);
+
+const asyncapiWithAvro = `
+asyncapi: 2.0.0
+info:
+  title: Example with Avro
+  version: 0.1.0
+channels:
+  example:
+    publish:
+      message:
+        schemaFormat: 'application/vnd.apache.avro;version=1.9.0'
+        payload:
+          type: notAValidAvroType
+`;
+
+parser.parse(asyncapiWithAvro)
+  .catch(err => {
+    assert.strictEqual(err.message,
+      'unknown type: "notAValidAvroType"');
+  });
+```
+
 ### Support of required attributes
 
 Required fields are fields with no default value and without the `"null"` union element.
