@@ -141,7 +141,7 @@ const avroSchemaParser = require('./index');
 
 parser.registerSchemaParser(avroSchemaParser);
 
-const asyncapiWithAvro = `
+const asyncapiWithInvalidAvro = `
 asyncapi: 2.0.0
 info:
   title: Example with Avro
@@ -155,7 +155,7 @@ channels:
           type: notAValidAvroType
 `;
 
-parser.parse(asyncapiWithAvro)
+parser.parse(asyncapiWithInvalidAvro)
   .catch(err => {
     assert.strictEqual(err.message,
       'unknown type: "notAValidAvroType"');
