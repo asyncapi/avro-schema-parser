@@ -47,11 +47,6 @@ describe('avroToJsonSchema()', function () {
     expect(result).toEqual({type: 'string'});
   });
 
-  it('transforms uuid values', async function () {
-    const result = await avroToJsonSchema({type: 'uuid'});
-    expect(result).toEqual({type: 'string'});
-  });
-
   it('transforms fixed values', async function () {
     const result = await avroToJsonSchema({type: 'fixed', size: 5});
     expect(result).toEqual({type: 'string', pattern: BYTES_PATTERN, minLength: 5, maxLength: 5});

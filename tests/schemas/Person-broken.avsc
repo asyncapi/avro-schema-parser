@@ -3,7 +3,7 @@
   "type": "record",
   "fields": [
     {"name": "name", "type": "string", "example": "Donkey"},
-    {"name": "age", "type": ["null", "int"], "default": null, "example": 123},
+    {"name": "age", "type": ["null", "int"], "default": null, "example": "123"},
     {
       "name": "favoriteProgrammingLanguage",
       "type": {"name": "ProgrammingLanguage", "type": "enum", "symbols": ["JS", "Java", "Go", "Rust", "C"], "default": "JS"}
@@ -13,7 +13,7 @@
       "type": {
         "name": "Address",
         "type": "record",
-        "fields": [{"name": "zipcode", "type": "int", "example": 53003}]
+        "fields": [{"name": "zipcode", "type": "notAValidAvroType", "example": "53003"}]
       }
     },
     {"name": "someid", "type": "string", "logicalType": "uuid"}
