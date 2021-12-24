@@ -136,7 +136,7 @@ function validateAvroSchema(avroDefinition) {
   avsc.Type.forSchema(avroDefinition);
 }
 
-async function convertAvroToJsonSchema(avroDefinition, isTopLevel) {
+async function convertAvroToJsonSchema(avroDefinition, isTopLevel, recordCache = {}) {
   const jsonSchema = {};
   const isUnion = Array.isArray(avroDefinition);
 
@@ -195,13 +195,23 @@ async function convertAvroToJsonSchema(avroDefinition, isTopLevel) {
   case 'record':
     const propsMap = new Map();
     for (const field of avroDefinition.fields) {
-      const def = await convertAvroToJsonSchema(field.type, false);
+      // If the type is a sub schema it will have been stored in the cache.
+      if (recordCache[field.type]) {
+        propsMap.set(field.name, recordCache[field.type]);
+      } else {
+        const def = await convertAvroToJsonSchema(field.type, false, recordCache);
 
-      requiredAttributesMapping(field, jsonSchema, field.default !== undefined);
-      commonAttributesMapping(field, def, false);
-      additionalAttributesMapping(field.type, field, def);
+        requiredAttributesMapping(field, jsonSchema, field.default !== undefined);
+        commonAttributesMapping(field, def, false);
+        additionalAttributesMapping(field.type, field, def);
 
-      propsMap.set(field.name, def);
+        propsMap.set(field.name, def);
+        // If there is a name for the sub record cache it under the name.
+        const qualifiedFieldName = getFullyQualifiedName(field.type);
+        if (qualifiedFieldName) {
+          recordCache[qualifiedFieldName] = def;
+        }
+      }
     }
     jsonSchema.properties = Object.fromEntries(propsMap.entries());
     break;
