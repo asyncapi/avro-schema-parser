@@ -35,11 +35,6 @@ describe('parse()', function() {
     expect(JSON.stringify(result.json())).toEqual(outputWithAvro190);
   });
 
-  it('should parse out pre-defined sub records', async function (){
-    const result = await parser.parse(inputWithSubAvro190, { path: __filename });
-    expect(JSON.stringify(result.json())).toEqual(outputWithSubAvro190);
-  });
-
   it('should parse Avro schema 1.9.0 with a namespace', async function() {
     const result = await parser.parse(inputWithAvro190WithNamespace, { path: __filename });
     expect(JSON.stringify(result.json())).toEqual(outputWithAvro190WithNamespace);
@@ -61,7 +56,7 @@ describe('parse()', function() {
       .rejects.toThrow('undefined type name: notAValidAvroType');
   });
   it('Issue #111 should handle pre defined records in schemas', async function() {
-    const result = await parser.parse(inputWithAvroAdditionalAttributes, { path: __filename });
-    expect(JSON.stringify(result.json())).toEqual(outputWithAvroAdditionalAttributes);
+    const result = await parser.parse(inputWithSubAvro190, { path: __filename });
+    expect(JSON.stringify(result.json())).toEqual(outputWithSubAvro190);
   });
 });
