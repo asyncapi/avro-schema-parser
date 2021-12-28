@@ -136,21 +136,39 @@ function validateAvroSchema(avroDefinition) {
   avsc.Type.forSchema(avroDefinition);
 }
 
+/**
+ * Cache the passed value under the given key. If the key is undefined the value will not be cached. This function
+ * uses mutation of the passed cache object rather than a copy on write cache strategy.
+ *
+ * @param cache Map<String, JsonSchema> the cache to store the JsonSchema
+ * @param key String | Undefined - the fully qualified name of an avro record
+ * @param value JsonSchema - The json schema from the avro record
+ */
+function cacheAvroRecordDef(cache, key, value) {
+  if (key) {
+    cache[key] = value;
+  }
+}
+
 async function convertAvroToJsonSchema(avroDefinition, isTopLevel, recordCache = {}) {
   const jsonSchema = {};
   const isUnion = Array.isArray(avroDefinition);
-
-  validateAvroSchema(avroDefinition);
 
   if (isUnion) {
     jsonSchema.oneOf = [];
     let nullDef = null;
     for (const avroDef of avroDefinition) {
-      const def = await convertAvroToJsonSchema(avroDef, isTopLevel);
+      const def = await convertAvroToJsonSchema(avroDef, isTopLevel, recordCache);
       // avroDef can be { type: 'int', default: 1 } and this is why avroDef.type has priority here
       const defType = avroDef.type || avroDef;
       // To prefer non-null values in the examples skip null definition here and push it as the last element after loop
-      if (defType === 'null') nullDef = def; else jsonSchema.oneOf.push(def);
+      if (defType === 'null') {
+        nullDef = def;
+      } else {
+        jsonSchema.oneOf.push(def);
+        const qualifiedName = getFullyQualifiedName(avroDef);
+        cacheAvroRecordDef(recordCache, qualifiedName, def);
+      }
     }
     if (nullDef) jsonSchema.oneOf.push(nullDef);
 
@@ -208,9 +226,7 @@ async function convertAvroToJsonSchema(avroDefinition, isTopLevel, recordCache =
         propsMap.set(field.name, def);
         // If there is a name for the sub record cache it under the name.
         const qualifiedFieldName = getFullyQualifiedName(field.type);
-        if (qualifiedFieldName) {
-          recordCache[qualifiedFieldName] = def;
-        }
+        cacheAvroRecordDef(recordCache, qualifiedFieldName, def);
       }
     }
     jsonSchema.properties = Object.fromEntries(propsMap.entries());
@@ -224,5 +240,6 @@ async function convertAvroToJsonSchema(avroDefinition, isTopLevel, recordCache =
 }
 
 module.exports.avroToJsonSchema = async function avroToJsonSchema(avroDefinition) {
+  validateAvroSchema(avroDefinition);
   return convertAvroToJsonSchema(avroDefinition, true);
 };

@@ -1,0 +1,36 @@
+[
+  {
+    "type": "record",
+    "name": "Address",
+    "namespace": "com.example",
+    "fields": [
+      {
+        "name": "streetaddress",
+        "type": "string"
+      },
+      {
+        "name": "city",
+        "type": "string"
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "Person",
+    "namespace": "com.example",
+    "fields": [
+      {
+        "name": "firstname",
+        "type": "string"
+      },
+      {
+        "name": "lastname",
+        "type": "string"
+      },
+      {
+        "name": "address",
+        "type": "com.example.Address"
+      }
+    ]
+  }
+]
