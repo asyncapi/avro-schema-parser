@@ -209,10 +209,10 @@ async function convertAvroToJsonSchema(avroDefinition, isTopLevel, recordCache =
  * When a record type is found in an avro schema this function can be used to process the underlying fields and return
  * the map of props contained by the record. The record will also be cached.
  *
- * @param avroDefinition
- * @param recordCache
- * @param jsonSchema
- * @returns {Promise<Map<any, any>>}
+ * @param avroDefinition the avro schema to be processed
+ * @param recordCache the cache of previously processed avro record types
+ * @param jsonSchema the schema for the record.
+ * @returns {Promise<Map<string, any>>}
  */
 async function processRecordSchema(avroDefinition, recordCache, jsonSchema) {
   const propsMap = new Map();
@@ -237,13 +237,14 @@ async function processRecordSchema(avroDefinition, recordCache, jsonSchema) {
 }
 
 /**
- * Handles processing union avro schema types by creating a oneOf jsonSchema definition.
+ * Handles processing union avro schema types by creating a oneOf jsonSchema definition. This will mutate the passed
+ * jsonSchema and recordCache objects.
  *
- * @param jsonSchema
- * @param avroDefinition
- * @param isTopLevel
- * @param recordCache
- * @returns {Promise<*>}
+ * @param jsonSchema the jsonSchema object that will be mutated.
+ * @param avroDefinition the avro schema to be processed
+ * @param isTopLevel is this the top level of the schema or is this a sub schema
+ * @param recordCache the cache of previously processed record types
+ * @returns {Promise<JsonSchema>} the mutated jsonSchema that was provided to the function
  */
 async function processUnionSchema(jsonSchema, avroDefinition, isTopLevel, recordCache) {
   jsonSchema.oneOf = [];
