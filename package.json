@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest",
     "release": "semantic-release",
-    "lint": "eslint --max-warnings 0 --config .eslintrc.yaml .",
+    "lint": "eslint --max-warnings 1 --config .eslintrc.yaml .",
     "generate:assets": "echo 'No additional assets need to be generated at the moment'",
     "bump:version": "npm --no-git-tag-version --allow-same-version version $VERSION"
   },
