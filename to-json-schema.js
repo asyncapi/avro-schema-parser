@@ -155,7 +155,7 @@ async function convertAvroToJsonSchema(avroDefinition, isTopLevel, recordCache =
   const isUnion = Array.isArray(avroDefinition);
 
   if (isUnion) {
-    return await processUnionSchema(jsonSchema, avroDefinition, isTopLevel, recordCache);
+    return processUnionSchema(jsonSchema, avroDefinition, isTopLevel, recordCache);
   }
 
   // Avro definition can be a string (e.g. "int")
