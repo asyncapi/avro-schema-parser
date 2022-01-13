@@ -1,0 +1,97 @@
+{
+  "projectName": "avro-schema-parser",
+  "projectOwner": "asyncapi",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "commitConvention": "none",
+  "contributors": [
+    {
+      "login": "fmvilas",
+      "name": "Fran Méndez",
+      "avatar_url": "https://avatars.githubusercontent.com/u/242119?v=4",
+      "profile": "http://www.fmvilas.com/",
+      "contributions": [
+        "code",
+        "maintenance",
+        "review",
+        "ideas"
+      ]
+    },
+    {
+      "login": "derberg",
+      "name": "Lukasz Gornicki",
+      "avatar_url": "https://avatars.githubusercontent.com/u/6995927?v=4",
+      "profile": "https://www.brainfart.dev/",
+      "contributions": [
+        "maintenance",
+        "review",
+        "infra"
+      ]
+    },
+    {
+      "login": "M3lkior",
+      "name": "Ludovic Dussart",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5501911?v=4",
+      "profile": "http://blog.ineat-conseil.fr/",
+      "contributions": [
+        "code",
+        "maintenance",
+        "review"
+      ]
+    },
+    {
+      "login": "dalelane",
+      "name": "Dale Lane",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1444788?v=4",
+      "profile": "http://dalelane.co.uk/blog",
+      "contributions": [
+        "code",
+        "maintenance",
+        "review"
+      ]
+    },
+    {
+      "login": "kolb0401",
+      "name": "Jonathan",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1172285?v=4",
+      "profile": "https://github.com/kolb0401",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "ITman1",
+      "name": "Radim Loskot",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1372054?v=4",
+      "profile": "https://github.com/ITman1",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "damaru-inc",
+      "name": "Michael Davis",
+      "avatar_url": "https://avatars.githubusercontent.com/u/3926925?v=4",
+      "profile": "http://www.damaru.com/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "germanschnyder",
+      "name": "Germán Schnyder",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1844525?v=4",
+      "profile": "https://github.com/germanschnyder",
+      "contributions": [
+        "code"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "skipCi": false
+}
