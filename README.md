@@ -211,3 +211,32 @@ JSON numbers ([RFC 4627, section 2.4](http://tools.ietf.org/html/rfc4627)) don't
 ### Hardcoded key and secret
 
 This is not a limitation of this package per se but of the [JSON Reference RFC](https://tools.ietf.org/html/draft-pbryan-zyp-json-ref-03). So far, you can only hardcode the values for `key` and `secret` on the `$ref` URL.
+
+## Contributors
+
+Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tr>
+    <td align="center"><a href="http://www.fmvilas.com/"><img src="https://avatars.githubusercontent.com/u/242119?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Fran Méndez</b></sub></a><br /><a href="https://github.com/asyncapi/avro-schema-parser/commits?author=fmvilas" title="Code">💻</a> <a href="#maintenance-fmvilas" title="Maintenance">🚧</a> <a href="https://github.com/asyncapi/avro-schema-parser/pulls?q=is%3Apr+reviewed-by%3Afmvilas" title="Reviewed Pull Requests">👀</a> <a href="#ideas-fmvilas" title="Ideas, Planning, & Feedback">🤔</a></td>
+    <td align="center"><a href="https://www.brainfart.dev/"><img src="https://avatars.githubusercontent.com/u/6995927?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Lukasz Gornicki</b></sub></a><br /><a href="#maintenance-derberg" title="Maintenance">🚧</a> <a href="https://github.com/asyncapi/avro-schema-parser/pulls?q=is%3Apr+reviewed-by%3Aderberg" title="Reviewed Pull Requests">👀</a> <a href="#infra-derberg" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
+    <td align="center"><a href="http://blog.ineat-conseil.fr/"><img src="https://avatars.githubusercontent.com/u/5501911?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Ludovic Dussart</b></sub></a><br /><a href="https://github.com/asyncapi/avro-schema-parser/commits?author=M3lkior" title="Code">💻</a> <a href="#maintenance-M3lkior" title="Maintenance">🚧</a> <a href="https://github.com/asyncapi/avro-schema-parser/pulls?q=is%3Apr+reviewed-by%3AM3lkior" title="Reviewed Pull Requests">👀</a></td>
+    <td align="center"><a href="http://dalelane.co.uk/blog"><img src="https://avatars.githubusercontent.com/u/1444788?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Dale Lane</b></sub></a><br /><a href="https://github.com/asyncapi/avro-schema-parser/commits?author=dalelane" title="Code">💻</a> <a href="#maintenance-dalelane" title="Maintenance">🚧</a> <a href="https://github.com/asyncapi/avro-schema-parser/pulls?q=is%3Apr+reviewed-by%3Adalelane" title="Reviewed Pull Requests">👀</a></td>
+    <td align="center"><a href="https://github.com/kolb0401"><img src="https://avatars.githubusercontent.com/u/1172285?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Jonathan</b></sub></a><br /><a href="https://github.com/asyncapi/avro-schema-parser/commits?author=kolb0401" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/ITman1"><img src="https://avatars.githubusercontent.com/u/1372054?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Radim Loskot</b></sub></a><br /><a href="https://github.com/asyncapi/avro-schema-parser/commits?author=ITman1" title="Code">💻</a></td>
+    <td align="center"><a href="http://www.damaru.com/"><img src="https://avatars.githubusercontent.com/u/3926925?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Michael Davis</b></sub></a><br /><a href="https://github.com/asyncapi/avro-schema-parser/commits?author=damaru-inc" title="Code">💻</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/germanschnyder"><img src="https://avatars.githubusercontent.com/u/1844525?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Germán Schnyder</b></sub></a><br /><a href="https://github.com/asyncapi/avro-schema-parser/commits?author=germanschnyder" title="Code">💻</a></td>
+  </tr>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
