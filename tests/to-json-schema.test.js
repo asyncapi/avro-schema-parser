@@ -116,6 +116,63 @@ describe('avroToJsonSchema()', function () {
     });
   });
 
+  it('support record references', async function () {
+    const result = await avroToJsonSchema({
+      type: 'record',
+      doc: 'My test record',
+      name: 'MyName',
+      fields: [
+        {
+          name: 'key1',
+          type: {type: 'record', name: 'recordKey1', doc: 'Key1 docs', fields: [{type: 'string', name: 'test'}]}
+        },
+        {name: 'key2', type: {type: 'record', fields: [{name: 'recordReference', type: 'recordKey1'}]}},
+      ]
+    });
+    expect(result).toEqual({
+      description: 'My test record',
+      properties: {
+        key1: {
+          description: 'Key1 docs',
+          properties: {
+            test: {
+              type: 'string'
+            }
+          },
+          required: [
+            'test'
+          ],
+          type: 'object',
+          'x-parser-schema-id': 'recordKey1'
+        },
+        key2: {
+          properties: {
+            recordReference: {
+              description: 'Key1 docs',
+              properties: {
+                test: {
+                  type: 'string'
+                }
+              },
+              required: [
+                'test'
+              ],
+              type: 'object',
+              'x-parser-schema-id': 'recordKey1'
+            }
+          },
+          type: 'object'
+        }
+      },
+      required: [
+        'key1',
+        'key2'
+      ],
+      type: 'object',
+      'x-parser-schema-id': 'MyName'
+    });
+  });
+
   it('assigns default values correctly in types and fields', async function () {
     expect(
       await avroToJsonSchema({type: 'int', default: 1})

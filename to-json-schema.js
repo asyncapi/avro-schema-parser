@@ -23,12 +23,12 @@ const typeMappings = {
   uuid: 'string',
 };
 
-const commonAttributesMapping = (avroDefinition, jsonSchema, isTopLevel) => {
+const commonAttributesMapping = (avroDefinition, jsonSchema, recordCache) => {
   if (avroDefinition.doc) jsonSchema.description = avroDefinition.doc;
   if (avroDefinition.default !== undefined) jsonSchema.default = avroDefinition.default;
 
   const fullyQualifiedName = getFullyQualifiedName(avroDefinition);
-  if (isTopLevel && fullyQualifiedName !== undefined) {
+  if (fullyQualifiedName !== undefined && recordCache[fullyQualifiedName]) {
     jsonSchema['x-parser-schema-id'] = fullyQualifiedName;
   }
 };
@@ -151,7 +151,7 @@ function cacheAvroRecordDef(cache, key, value) {
 }
 
 async function convertAvroToJsonSchema(avroDefinition, isTopLevel, recordCache = {}) {
-  const jsonSchema = {};
+  let jsonSchema = {};
   const isUnion = Array.isArray(avroDefinition);
 
   if (isUnion) {
@@ -195,11 +195,18 @@ async function convertAvroToJsonSchema(avroDefinition, isTopLevel, recordCache =
     break;
   case 'record':
     const propsMap = await processRecordSchema(avroDefinition, recordCache, jsonSchema);
+    cacheAvroRecordDef(recordCache, getFullyQualifiedName(avroDefinition), propsMap);
     jsonSchema.properties = Object.fromEntries(propsMap.entries());
+    break;
+  default:
+    const cachedRecord = recordCache[avroDefinition];
+    if (cachedRecord) {
+      jsonSchema= cachedRecord;
+    }
     break;
   }
 
-  commonAttributesMapping(avroDefinition, jsonSchema, isTopLevel);
+  commonAttributesMapping(avroDefinition, jsonSchema, recordCache);
   additionalAttributesMapping(type, avroDefinition, jsonSchema);
 
   return jsonSchema;
@@ -224,7 +231,7 @@ async function processRecordSchema(avroDefinition, recordCache, jsonSchema) {
       const def = await convertAvroToJsonSchema(field.type, false, recordCache);
 
       requiredAttributesMapping(field, jsonSchema, field.default !== undefined);
-      commonAttributesMapping(field, def, false);
+      commonAttributesMapping(field, def, recordCache);
       additionalAttributesMapping(field.type, field, def);
 
       propsMap.set(field.name, def);
