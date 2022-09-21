@@ -96,7 +96,7 @@ describe('avroToJsonSchema()', function () {
       ]
     });
     expect(result).toEqual({
-      type: 'object',
+      type: 'record',
       'x-parser-schema-id': 'MyName',
       description: 'My test record',
       required: ['key1'],
@@ -142,7 +142,7 @@ describe('avroToJsonSchema()', function () {
           required: [
             'test'
           ],
-          type: 'object',
+          type: 'record',
           'x-parser-schema-id': 'recordKey1'
         },
         key2: {
@@ -157,18 +157,18 @@ describe('avroToJsonSchema()', function () {
               required: [
                 'test'
               ],
-              type: 'object',
+              type: 'record',
               'x-parser-schema-id': 'recordKey1'
             }
           },
-          type: 'object'
+          type: 'record'
         }
       },
       required: [
         'key1',
         'key2'
       ],
-      type: 'object',
+      type: 'record',
       'x-parser-schema-id': 'MyName'
     });
   });
@@ -181,7 +181,7 @@ describe('avroToJsonSchema()', function () {
     expect(
       await avroToJsonSchema({type: 'record', fields: [{name: 'field1', type: 'string', default: 'AsyncAPI rocks!'}]})
     ).toEqual({
-      type: 'object',
+      type: 'record',
       properties: {field1: {type: 'string', default: 'AsyncAPI rocks!'}}
     });
   });
@@ -208,7 +208,7 @@ describe('supportExampleAttribute', function () {
       ]
     });
     expect(result).toEqual({
-      type: 'object',
+      type: 'record',
       'x-parser-schema-id': 'MyName',
       properties: {
         example: {
@@ -241,7 +241,7 @@ describe('requiredAttributesMapping()', function () {
       ]
     });
     expect(result).toMatchObject({
-      type: 'object',
+      type: 'record',
       'x-parser-schema-id': 'MyName',
       description: 'My test record',
       required: ['required1', 'required2']

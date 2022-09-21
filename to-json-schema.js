@@ -19,7 +19,7 @@ const typeMappings = {
   map: 'object',
   array: 'array',
   enum: 'string',
-  record: 'object',
+  record: 'record',
   uuid: 'string',
 };
 
