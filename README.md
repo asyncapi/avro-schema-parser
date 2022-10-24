@@ -3,16 +3,39 @@
 An AsyncAPI schema parser for Avro 1.x schemas.
 
 > **Note**
-> Version >= `2.0.0` of this package is only supported by the `@asyncapi/parser` version >= `2.0.0`.
+> Version >= `3.0.0` of this package is only supported by the `@asyncapi/parser` version >= `2.0.0`.
 
 <!-- toc is generated with GitHub Actions do not remove toc markers -->
 
 <!-- toc -->
 
+- [Installation](#installation)
+- [Usage](#usage)
+  * [Usage with remote references](#usage-with-remote-references)
+  * [Usage with local references](#usage-with-local-references)
+  * [Usage with Confluent Schema Registry](#usage-with-confluent-schema-registry)
+    + [Create an API key](#create-an-api-key)
+    + [Copy the key and the secret](#copy-the-key-and-the-secret)
+    + [Use them on your AsyncAPI document](#use-them-on-your-asyncapi-document)
+- [Features](#features)
+  * [Validation of Avro schemas](#validation-of-avro-schemas)
+  * [Support of required attributes](#support-of-required-attributes)
+  * [Support for extra attributes on top of Avro specification](#support-for-extra-attributes-on-top-of-avro-specification)
+    + [List of all supported extra attributes](#list-of-all-supported-extra-attributes)
+  * [Support for names and namespaces](#support-for-names-and-namespaces)
+- [Limitations](#limitations)
+  * [Float and double-precision numbers](#float-and-double-precision-numbers)
+  * [Hardcoded key and secret](#hardcoded-key-and-secret)
+- [Contributors](#contributors)
+
+<!-- tocstop -->
+
 ## Installation
 
-```
+```bash
 npm install @asyncapi/avro-schema-parser
+// OR
+yarn add @asyncapi/avro-schema-parser
 ```
 
 ## Usage
@@ -143,7 +166,7 @@ const { document } = await parser.parse(asyncapiWithAvro);
 
 ### Validation of Avro schemas
 
-Avro schemas included in parsed AsyncAPI documents are validated using [avsc](https://www.npmjs.com/package/avsc). Invalid Avro schemas will cause the `parse` function to return `diagnostics` with all the validation errors.
+Avro schemas included in parsed AsyncAPI documents are validated using [avsc](https://www.npmjs.com/package/avsc). The `parser.validate(...)` function returns all validation issues.
 
 ```js
 import { Parser } from '@asyncapi/parser';
@@ -166,9 +189,14 @@ channels:
           type: notAValidAvroType
 `;
 
-const { document, diagnostics } = await parser.parse(doc);
-console.log(diagnostics);
+const diagnostics = await parser.validate(doc);
+// Custom schema issues are stored by the code "asyncapi-schemas-v2"
+const avroDiagnostics = diagnostics.filter(d => d.code === 'asyncapi-schemas-v2');
+console.log(avroDiagnostics);
 ```
+
+> **Note**
+> `parser.parse(...)` function also returns `diagnostics` data with all the validation issues.
 
 ### Support of required attributes
 
