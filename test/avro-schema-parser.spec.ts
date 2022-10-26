@@ -1,40 +1,46 @@
 import fs from 'fs';
 import path from 'path';
+
 import { AvroSchemaParser, avroToJsonSchema } from '../src/index';
+import type { ParseSchemaInput, Diagnostic } from '@asyncapi/parser';
+import { Parser } from '@asyncapi/parser';
 
-import type { ParseSchemaInput } from '@asyncapi/parser';
-
-const inputWithAvro182 = toParseInput(fs.readFileSync(path.resolve(__dirname, './asyncapi-avro-1.8.2.json'), 'utf8'));
+const inputWithAvro182 = toParseInput(fs.readFileSync(path.resolve(__dirname, './documents/asyncapi-avro-1.8.2.json'), 'utf8'));
 const outputWithAvro182 = '{"type":"object","required":["name","favoriteProgrammingLanguage","address"],"properties":{"name":{"type":"string","examples":["Donkey"]},"age":{"oneOf":[{"type":"integer","minimum":-2147483648,"maximum":2147483647},{"type":"null"}],"default":null},"favoriteProgrammingLanguage":{"type":"string","enum":["JS","Java","Go","Rust","C"]},"address":{"type":"object","x-parser-schema-id":"Address","required":["zipcode"],"properties":{"zipcode":{"type":"integer","minimum":-2147483648,"maximum":2147483647,"examples":[53003]}}}}}';
 
-const inputWithAvro190 = toParseInput(fs.readFileSync(path.resolve(__dirname, './asyncapi-avro-1.9.0.json'), 'utf8'));
+const inputWithAvro190 = toParseInput(fs.readFileSync(path.resolve(__dirname, './documents/asyncapi-avro-1.9.0.json'), 'utf8'));
 const outputWithAvro190 = '{"type":"object","required":["name","favoriteProgrammingLanguage","address","someid"],"properties":{"name":{"type":"string","examples":["Donkey"]},"age":{"oneOf":[{"type":"integer","minimum":-2147483648,"maximum":2147483647,"examples":[123]},{"type":"null"}],"default":null},"favoriteProgrammingLanguage":{"type":"string","enum":["JS","Java","Go","Rust","C"],"default":"JS"},"address":{"type":"object","x-parser-schema-id":"Address","required":["zipcode"],"properties":{"zipcode":{"type":"integer","minimum":-2147483648,"maximum":2147483647,"examples":[53003]}}},"someid":{"type":"string","format":"uuid"}},"x-parser-schema-id":"Person"}';
 
-const inputWithAvro190WithNamespace = toParseInput(fs.readFileSync(path.resolve(__dirname, './asyncapi-avro-1.9.0-namespace.json'), 'utf8'));
+const inputWithAvro190WithNamespace = toParseInput(fs.readFileSync(path.resolve(__dirname, './documents/asyncapi-avro-1.9.0-namespace.json'), 'utf8'));
 const outputWithAvro190WithNamespace = '{"type":"object","required":["name","favoriteProgrammingLanguage","address","someid"],"properties":{"name":{"type":"string","examples":["Donkey"]},"age":{"oneOf":[{"type":"integer","minimum":-2147483648,"maximum":2147483647,"examples":[123]},{"type":"null"}],"default":null},"favoriteProgrammingLanguage":{"type":"string","enum":["JS","Java","Go","Rust","C"],"default":"JS"},"address":{"type":"object","x-parser-schema-id":"Address","required":["zipcode"],"properties":{"zipcode":{"type":"integer","minimum":-2147483648,"maximum":2147483647,"examples":[53003]}}},"someid":{"type":"string","format":"uuid"}},"x-parser-schema-id":"com.company.Person"}';
 
-const inputWithAvro190WithBindings = toParseInput(fs.readFileSync(path.resolve(__dirname, './asyncapi-avro-1.9.0-bindings.json'), 'utf8'));
+const inputWithAvro190WithBindings = toParseInput(fs.readFileSync(path.resolve(__dirname, './documents/asyncapi-avro-1.9.0-bindings.json'), 'utf8'));
 const outputWithAvro190WithBindings = '{"type":"object","required":["name","favoriteProgrammingLanguage","address","someid"],"properties":{"name":{"type":"string","examples":["Donkey"]},"age":{"oneOf":[{"type":"integer","minimum":-2147483648,"maximum":2147483647,"examples":[123]},{"type":"null"}],"default":null},"favoriteProgrammingLanguage":{"type":"string","enum":["JS","Java","Go","Rust","C"],"default":"JS"},"address":{"type":"object","x-parser-schema-id":"Address","required":["zipcode"],"properties":{"zipcode":{"type":"integer","minimum":-2147483648,"maximum":2147483647,"examples":[53003]}}},"someid":{"type":"string","format":"uuid"}},"x-parser-schema-id":"com.company.Person"}';
 const outputWithAvro190WithBindingsKafkaKeyTransformed = '{"type":"object","required":["name","favoriteProgrammingLanguage","address","someid"],"properties":{"name":{"type":"string","examples":["Donkey"]},"age":{"oneOf":[{"type":"integer","minimum":-2147483648,"maximum":2147483647,"examples":[123]},{"type":"null"}],"default":null},"favoriteProgrammingLanguage":{"type":"string","enum":["JS","Java","Go","Rust","C"],"default":"JS"},"address":{"type":"object","required":["zipcode"],"properties":{"zipcode":{"type":"integer","minimum":-2147483648,"maximum":2147483647,"examples":[53003]}},"x-parser-schema-id":"Address"},"someid":{"type":"string","format":"uuid"}},"x-parser-schema-id":"com.company.Person"}';
 const outputWithAvro190WithBindingsKafkaKeyOriginal = '{"name":"Person","namespace":"com.company","type":"record","fields":[{"name":"name","type":"string","example":"Donkey"},{"name":"age","type":["null","int"],"default":null,"example":123},{"name":"favoriteProgrammingLanguage","type":{"name":"ProgrammingLanguage","type":"enum","symbols":["JS","Java","Go","Rust","C"],"default":"JS"}},{"name":"address","type":{"name":"Address","type":"record","fields":[{"name":"zipcode","type":"int","example":53003}]}},{"name":"someid","type":"string","logicalType":"uuid"}]}';
 
-const inputWithAvroAdditionalAttributes = toParseInput(fs.readFileSync(path.resolve(__dirname, './asyncapi-avro-1.9.0-additional-attributes.json'), 'utf8'));
+const inputWithAvroAdditionalAttributes = toParseInput(fs.readFileSync(path.resolve(__dirname, './documents/asyncapi-avro-1.9.0-additional-attributes.json'), 'utf8'));
 const outputWithAvroAdditionalAttributes = '{"type":"object","required":["name","serialNo","favoriteProgrammingLanguage","certifications","address","weight","height","someid"],"properties":{"name":{"type":"string","examples":["Donkey"],"minLength":0},"serialNo":{"type":"string","minLength":0,"maxLength":50},"email":{"oneOf":[{"type":"string","examples":["donkey@asyncapi.com"],"pattern":"^[\\\\w-\\\\.]+@([\\\\w-]+\\\\.)+[\\\\w-]{2,4}$"},{"type":"null"}]},"age":{"oneOf":[{"type":"integer","minimum":-2147483648,"maximum":2147483647,"examples":[123],"exclusiveMinimum":0,"exclusiveMaximum":200},{"type":"null"}],"default":null},"favoriteProgrammingLanguage":{"type":"string","enum":["JS","Java","Go","Rust","C"],"default":"JS"},"certifications":{"type":"array","items":{"type":"string"},"minItems":1,"maxItems":500,"uniqueItems":true},"address":{"type":"object","x-parser-schema-id":"Address","required":["zipcode"],"properties":{"zipcode":{"type":"integer","minimum":-2147483648,"maximum":2147483647,"examples":[53003]},"country":{"oneOf":[{"type":"string"},{"type":"null"}]}}},"weight":{"type":"number","format":"float","examples":[65.1],"minimum":0,"maximum":500},"height":{"type":"number","format":"double","examples":[1.85],"minimum":0,"maximum":3},"someid":{"type":"string","format":"uuid"}},"x-parser-schema-id":"com.company.Person"}';
 
-const inputWithInvalidAvro = toParseInput(fs.readFileSync(path.resolve(__dirname, './asyncapi-avro-invalid.json'), 'utf8'));
-const inputWithBrokenAvro = toParseInput(fs.readFileSync(path.resolve(__dirname, './asyncapi-avro-broken.json'), 'utf8'));
+const inputWithInvalidAvro = toParseInput(fs.readFileSync(path.resolve(__dirname, './documents/asyncapi-avro-invalid.json'), 'utf8'));
+const inputWithBrokenAvro = toParseInput(fs.readFileSync(path.resolve(__dirname, './documents/asyncapi-avro-broken.json'), 'utf8'));
 
-const inputWithSubAvro190 = toParseInput(fs.readFileSync(path.resolve(__dirname, './asyncapi-avro-111-1.9.0.json'), 'utf8'));
+const inputWithSubAvro190 = toParseInput(fs.readFileSync(path.resolve(__dirname, './documents/asyncapi-avro-111-1.9.0.json'), 'utf8'));
 const outputWithSubAvro190 = '{"type":"object","required":["metadata","auth_code","triggered_by"],"properties":{"metadata":{"type":"object","x-parser-schema-id":"com.foo.EventMetadata","required":["id","timestamp"],"properties":{"id":{"type":"string","format":"uuid","description":"Unique identifier for this specific event"},"timestamp":{"type":"integer","minimum":-9223372036854776000,"maximum":9223372036854776000,"description":"Instant the event took place (not necessary when it was published)"},"correlation_id":{"oneOf":[{"type":"string","format":"uuid"},{"type":"null"}],"description":"id of the event that resulted in this\\nevent being published (optional)","default":null},"publisher_context":{"oneOf":[{"type":"object","additionalProperties":{"type":"string"}},{"type":"null"}],"description":"optional set of key-value pairs of context to be echoed back\\nin any resulting message (like a richer\\ncorrelationId.\\n\\nThese values are likely only meaningful to the publisher\\nof the correlated event","default":null}},"description":"Metadata to be associated with every published event"},"auth_code":{"type":"object","x-parser-schema-id":"com.foo.EncryptedString","required":["value","nonce","key"],"properties":{"value":{"type":"string","description":"A sequence of bytes that has been AES encrypted in CTR mode."},"nonce":{"type":"string","description":"A nonce, used by the CTR encryption mode for our encrypted value. Not encrypted, not a secret."},"key":{"type":"string","description":"An AES key, used to encrypt the value field, that has itself been encrypted using RSA."}},"description":"Encrypted auth_code received when user authorizes the app."},"refresh_token":{"type":"object","required":["value","nonce","key"],"properties":{"value":{"type":"string","description":"A sequence of bytes that has been AES encrypted in CTR mode."},"nonce":{"type":"string","description":"A nonce, used by the CTR encryption mode for our encrypted value. Not encrypted, not a secret."},"key":{"type":"string","description":"An AES key, used to encrypt the value field, that has itself been encrypted using RSA."}},"description":"Encrypted auth_code received when user authorizes the app.","x-parser-schema-id":"com.foo.EncryptedString"},"triggered_by":{"type":"string","format":"uuid","description":"ID of the user who triggered this event."}},"description":"An example schema to illustrate the issue","x-parser-schema-id":"com.foo.connections.ConnectionRequested"}';
 
-const inputWithOneOfReferenceAvro190 = toParseInput(fs.readFileSync(path.resolve(__dirname, './asyncapi-avro-113-1.9.0.json'), 'utf8'));
+const inputWithOneOfReferenceAvro190 = toParseInput(fs.readFileSync(path.resolve(__dirname, './documents/asyncapi-avro-113-1.9.0.json'), 'utf8'));
 const outputWithOneOfReferenceAvro190 = '{"oneOf":[{"type":"object","required":["streetaddress","city"],"properties":{"streetaddress":{"type":"string"},"city":{"type":"string"}},"x-parser-schema-id":"com.example.Address"},{"type":"object","required":["firstname","lastname"],"properties":{"firstname":{"type":"string"},"lastname":{"type":"string"},"address":{"type":"object","required":["streetaddress","city"],"properties":{"streetaddress":{"type":"string"},"city":{"type":"string"}},"x-parser-schema-id":"com.example.Address"}},"x-parser-schema-id":"com.example.Person"}]}';
 
-const inputWithRecordReferencesAvro190 = toParseInput(fs.readFileSync(path.resolve(__dirname, './asyncapi-avro-148-1.9.0.json'), 'utf8'));
+const inputWithRecordReferencesAvro190 = toParseInput(fs.readFileSync(path.resolve(__dirname, './documents/asyncapi-avro-148-1.9.0.json'), 'utf8'));
 const outputWithRecordReferencesAvro190 = '{"type":"object","required":["Record1","simpleField"],"properties":{"Record1":{"type":"object","required":["string"],"properties":{"string":{"type":"string","description":"field in Record1"}},"description":"Reused in other fields","x-parser-schema-id":"Record1"},"FieldThatDefineRecordInUnion":{"oneOf":[{"type":"object","required":["number"],"properties":{"number":{"type":"integer","minimum":0,"maximum":2,"description":"field in RecordDefinedInUnion"}},"x-parser-schema-id":"com.example.model.RecordDefinedInUnion"},{"type":"null"}],"default":null},"FieldThatReuseRecordDefinedInUnion":{"oneOf":[{},{"type":"null"}],"default":null},"FieldThatReuseRecord1":{"oneOf":[{},{"type":"null"}],"default":null},"simpleField":{"type":"string"}},"x-parser-schema-id":"com.example.RecordWithReferences"}';
+
+const inputWithValidAsyncAPI = fs.readFileSync(path.resolve(__dirname, './documents/valid-asyncapi.yaml'), 'utf8');
+const inputWithInvalidAsyncAPI = fs.readFileSync(path.resolve(__dirname, './documents/invalid-asyncapi.yaml'), 'utf8');
 
 describe('AvroSchemaParser', function () {
   const parser = AvroSchemaParser();
+  const coreParser = new Parser(); 
+  coreParser.registerSchemaParser(parser); 
 
   it('should return Mime Types', async function () {
     expect(parser.getMimeTypes()).not.toEqual([]);
@@ -96,12 +102,50 @@ describe('AvroSchemaParser', function () {
     await doTest(inputWithRecordReferencesAvro190, outputWithRecordReferencesAvro190);
   });
 
+  it('should parse valid AsyncAPI', async function() {
+    const { document, diagnostics } = await coreParser.parse(inputWithValidAsyncAPI);
+    expect(filterDiagnostics(diagnostics, 'asyncapi-schemas-v2')).toHaveLength(0);
+    doParseCoreTest((document?.json()?.channels?.myChannel?.publish?.message as any)?.payload, outputWithAvro190);
+    doParseCoreTest((document?.json()?.components?.messages?.testMessage as any)?.payload, outputWithAvro190);
+  });
+
+  it('should validate valid AsyncAPI', async function() {
+    const diagnostics = await coreParser.validate(inputWithValidAsyncAPI);
+    expect(filterDiagnostics(diagnostics, 'asyncapi-schemas-v2')).toHaveLength(0);
+  });
+
+  it('should validate invalid AsyncAPI', async function() {
+    const diagnostics = await coreParser.validate(inputWithInvalidAsyncAPI);
+    const filteredDiagnostics = filterDiagnostics(diagnostics, 'asyncapi-schemas-v2');
+    expect(filteredDiagnostics).toHaveLength(2);
+    expect(filteredDiagnostics).toEqual([
+      {code: 'asyncapi-schemas-v2', message: 'unknown type: "nonexistent"', path: ['channels', 'myChannel', 'publish', 'message', 'payload'], range: {end: {character: 49, line: 9}, start: {character: 14, line: 8}}, severity: 0, source: undefined}, 
+      {code: 'asyncapi-schemas-v2', message: 'unknown type: "nonexistent"', path: ['components', 'messages', 'testMessage', 'payload'], range: {end: {character: 25, line: 17}, start: {character: 14, line: 15}}, severity: 0}
+    ]);
+  });
+
   async function doTest(originalInput: ParseSchemaInput, expectedOutput: any) {
     const input = {...originalInput};
     const result = await parser.parse(input);
 
     // Check that the return value of parse() is the expected JSON Schema.
     expect(result).toEqual(JSON.parse(expectedOutput));
+  }
+
+  async function doParseCoreTest(parsedSchema: any, expectedOutput: string) {
+    const filter = (field: string, value: unknown) => {
+      if (field === 'x-parser-schema-id') return;
+      return value;
+    };
+
+    const result = JSON.parse(JSON.stringify(parsedSchema, filter));
+
+    // Check that the return value of parse() is the expected JSON Schema.
+    expect(result).toEqual(JSON.parse(expectedOutput, filter));
+  }
+
+  function filterDiagnostics(diagnostics: Diagnostic[], code: string) {
+    return diagnostics.filter(d => d.code === code);
   }
 });
 
