@@ -14,6 +14,7 @@ export function AvroSchemaParser(): SchemaParser {
     getMimeTypes,
   };
 }
+export default AvroSchemaParser;
 
 async function validate(input: ValidateSchemaInput<unknown, unknown>): Promise<SchemaValidateResult[]> {
   const result: SchemaValidateResult[] = [];
