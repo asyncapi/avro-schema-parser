@@ -348,6 +348,6 @@ async function processUnionSchema(jsonSchema: SpecTypesV2.AsyncAPISchemaDefiniti
   return jsonSchema;
 }
 
-async function avroToJsonSchema(avroDefinition: AvroSchema) {
+export async function avroToJsonSchema(avroDefinition: AvroSchema) {
   return convertAvroToJsonSchema(avroDefinition, true);
 }
