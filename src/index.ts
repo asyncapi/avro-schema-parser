@@ -35,9 +35,6 @@ async function validate(input: ValidateSchemaInput<unknown, unknown>): Promise<S
 
 async function parse(input: ParseSchemaInput<unknown, unknown>): Promise<AsyncAPISchema> {
   const asyncAPISchema = await avroToJsonSchema(input.data as AvroSchema);
-
-  // TODO: Should the following modifications to the message object be done in the caller and for all parsers rather than here?
-  // remove that function when https://github.com/asyncapi/spec/issues/622 will be introduced in AsyncAPI spec
   const message = (input.meta as any).message;
   const key = message?.bindings?.kafka?.key;
   if (key) {
