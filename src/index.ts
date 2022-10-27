@@ -330,7 +330,8 @@ async function processRecordSchema(avroDefinition: AvroSchema, recordCache: Reco
 async function processUnionSchema(jsonSchema: SpecTypesV2.AsyncAPISchemaDefinition, avroDefinition: AvroSchema, isTopLevel: boolean, recordCache: Record<string, SpecTypesV2.AsyncAPISchemaDefinition>): Promise<SpecTypesV2.AsyncAPISchemaDefinition> {
   jsonSchema.oneOf = [];
   let nullDef = null;
-  for (const avroDef of avroDefinition as any) {
+  
+  for (const avroDef of avroDefinition as AvroSchema[]) {
     const def = await convertAvroToJsonSchema(avroDef, isTopLevel, recordCache);
     // avroDef can be { type: 'int', default: 1 } and this is why avroDef.type has priority here
     const defType = avroDef.type || avroDef;
