@@ -1,0 +1,9 @@
+.DS_Store
+*.swp
+.github
+.all-contributorsrc
+.editorconfig
+assets/*
+vscode
+coverage
+node_modules
