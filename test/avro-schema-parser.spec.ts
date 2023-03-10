@@ -104,23 +104,23 @@ describe('AvroSchemaParser', function () {
 
   it('should parse valid AsyncAPI', async function() {
     const { document, diagnostics } = await coreParser.parse(inputWithValidAsyncAPI);
-    expect(filterDiagnostics(diagnostics, 'asyncapi-schemas-v2')).toHaveLength(0);
+    expect(filterDiagnostics(diagnostics, 'asyncapi2-schemas')).toHaveLength(0);
     doParseCoreTest((document?.json()?.channels?.myChannel?.publish?.message as any)?.payload, outputWithAvro190);
     doParseCoreTest((document?.json()?.components?.messages?.testMessage as any)?.payload, outputWithAvro190);
   });
 
   it('should validate valid AsyncAPI', async function() {
     const diagnostics = await coreParser.validate(inputWithValidAsyncAPI);
-    expect(filterDiagnostics(diagnostics, 'asyncapi-schemas-v2')).toHaveLength(0);
+    expect(filterDiagnostics(diagnostics, 'asyncapi2-schemas')).toHaveLength(0);
   });
 
   it('should validate invalid AsyncAPI', async function() {
     const diagnostics = await coreParser.validate(inputWithInvalidAsyncAPI);
-    const filteredDiagnostics = filterDiagnostics(diagnostics, 'asyncapi-schemas-v2');
+    const filteredDiagnostics = filterDiagnostics(diagnostics, 'asyncapi2-schemas');
     expect(filteredDiagnostics).toHaveLength(2);
     expect(filteredDiagnostics).toEqual([
-      {code: 'asyncapi-schemas-v2', message: 'unknown type: "nonexistent"', path: ['channels', 'myChannel', 'publish', 'message', 'payload'], range: {end: {character: 49, line: 9}, start: {character: 14, line: 8}}, severity: 0, source: undefined}, 
-      {code: 'asyncapi-schemas-v2', message: 'unknown type: "nonexistent"', path: ['components', 'messages', 'testMessage', 'payload'], range: {end: {character: 25, line: 17}, start: {character: 14, line: 15}}, severity: 0}
+      {code: 'asyncapi2-schemas', message: 'unknown type: "nonexistent"', path: ['channels', 'myChannel', 'publish', 'message', 'payload'], range: {end: {character: 49, line: 9}, start: {character: 14, line: 8}}, severity: 0, source: undefined}, 
+      {code: 'asyncapi2-schemas', message: 'unknown type: "nonexistent"', path: ['components', 'messages', 'testMessage', 'payload'], range: {end: {character: 25, line: 17}, start: {character: 14, line: 15}}, severity: 0}
     ]);
   });
 

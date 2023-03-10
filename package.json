@@ -45,7 +45,7 @@
     "README.md"
   ],
   "dependencies": {
-    "@asyncapi/parser": "^2.0.0-next-major.7",
+    "@asyncapi/parser": "^v2.0.0-next-major.15",
     "avsc": "^5.7.6",
     "@types/json-schema": "^7.0.11"
   },
