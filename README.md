@@ -2,19 +2,50 @@
 
 An AsyncAPI schema parser for Avro 1.x schemas.
 
+> **Note**
+> Version >= `2.0.0` of this package is only supported by the `@asyncapi/parser` version >= `2.0.0`.
+
+<!-- toc is generated with GitHub Actions do not remove toc markers -->
+
+<!-- toc -->
+
+- [Installation](#installation)
+- [Usage](#usage)
+  * [Usage with remote references](#usage-with-remote-references)
+  * [Usage with local references](#usage-with-local-references)
+  * [Usage with Confluent Schema Registry](#usage-with-confluent-schema-registry)
+    + [Create an API key](#create-an-api-key)
+    + [Copy the key and the secret](#copy-the-key-and-the-secret)
+    + [Use them on your AsyncAPI document](#use-them-on-your-asyncapi-document)
+- [Features](#features)
+  * [Validation of Avro schemas](#validation-of-avro-schemas)
+  * [Support of required attributes](#support-of-required-attributes)
+  * [Support for extra attributes on top of Avro specification](#support-for-extra-attributes-on-top-of-avro-specification)
+    + [List of all supported extra attributes](#list-of-all-supported-extra-attributes)
+  * [Support for names and namespaces](#support-for-names-and-namespaces)
+- [Limitations](#limitations)
+  * [Float and double-precision numbers](#float-and-double-precision-numbers)
+  * [Hardcoded key and secret](#hardcoded-key-and-secret)
+- [Contributors](#contributors)
+
+<!-- tocstop -->
+
 ## Installation
 
-```
+```bash
 npm install @asyncapi/avro-schema-parser
+// OR
+yarn add @asyncapi/avro-schema-parser
 ```
 
 ## Usage
 
 ```js
-const parser = require('@asyncapi/parser')
-const avroSchemaParser = require('@asyncapi/avro-schema-parser')
+import { Parser } from '@asyncapi/parser';
+import { AvroSchemaParser } from '@asyncapi/avro-schema-parser';
 
-parser.registerSchemaParser(avroSchemaParser);
+const parser = new Parser();
+parser.registerSchemaParser(AvroSchemaParser()); 
 
 const asyncapiWithAvro = `
 asyncapi: 2.0.0
@@ -40,16 +71,48 @@ channels:
               type: int
 `
 
-await parser.parse(asyncapiWithAvro)
+const { document } = await parser.parse(asyncapiWithAvro);
+```
+
+```js
+const { Parser } = require('@asyncapi/parser');
+const { AvroSchemaParser } = require('@asyncapi/raml-dt-schema-parser');
+
+const parser = new Parser();
+parser.registerSchemaParser(AvroSchemaParser()); 
+
+const asyncapiWithAvro = `
+asyncapi: 2.0.0
+info:
+  title: Example with Avro
+  version: 0.1.0
+channels:
+  example:
+    publish:
+      message:
+        schemaFormat: 'application/vnd.apache.avro;version=1.9.0'
+        payload: # The following is an Avro schema in YAML format (JSON format is also supported)
+          type: record
+          name: User
+          namespace: com.company
+          doc: User information
+          fields:
+            - name: displayName
+              type: string
+            - name: email
+              type: string
+            - name: age
+              type: int
 ```
 
 ### Usage with remote references
 
 ```js
-const parser = require('@asyncapi/parser')
-const avroSchemaParser = require('@asyncapi/avro-schema-parser')
+import { Parser } from '@asyncapi/parser';
+import { AvroSchemaParser } from '@asyncapi/avro-schema-parser';
 
-parser.registerSchemaParser(avroSchemaParser)
+const parser = new Parser();
+parser.registerSchemaParser(AvroSchemaParser()); 
 
 const asyncapiWithAvro = `
 asyncapi: 2.0.0
@@ -65,16 +128,41 @@ channels:
           $ref: 'https://schemas.example.com/user'
 `
 
-await parser.parse(asyncapiWithAvro)
+const { document } = await parser.parse(asyncapiWithAvro);
+```
+
+```js
+const { Parser } = require('@asyncapi/parser');
+const { AvroSchemaParser } = require('@asyncapi/raml-dt-schema-parser');
+
+const parser = new Parser();
+parser.registerSchemaParser(AvroSchemaParser()); 
+
+const asyncapiWithAvro = `
+asyncapi: 2.0.0
+info:
+  title: Example with Avro
+  version: 0.1.0
+channels:
+  example:
+    publish:
+      message:
+        schemaFormat: 'application/vnd.apache.avro;version=1.9.0'
+        payload:
+          $ref: 'https://schemas.example.com/user'
+`
+
+const { document } = await parser.parse(asyncapiWithAvro);
 ```
 
 ### Usage with local references
 
 ```js
-const parser = require('@asyncapi/parser')
-const avroSchemaParser = require('@asyncapi/avro-schema-parser')
+import { Parser } from '@asyncapi/parser';
+import { AvroSchemaParser } from '@asyncapi/avro-schema-parser';
 
-parser.registerSchemaParser(avroSchemaParser)
+const parser = new Parser();
+parser.registerSchemaParser(AvroSchemaParser()); 
 
 const asyncapiWithAvro = `
 asyncapi: 2.0.0
@@ -90,7 +178,31 @@ channels:
           $ref: 'local/path/to/file/user'
 `
 
-await parser.parse(asyncapiWithAvro)
+const { document } = await parser.parse(asyncapiWithAvro);
+```
+
+```js
+const { Parser } = require('@asyncapi/parser');
+const { AvroSchemaParser } = require('@asyncapi/raml-dt-schema-parser');
+
+const parser = new Parser();
+parser.registerSchemaParser(AvroSchemaParser()); 
+
+const asyncapiWithAvro = `
+asyncapi: 2.0.0
+info:
+  title: Example with Avro
+  version: 0.1.0
+channels:
+  example:
+    publish:
+      message:
+        schemaFormat: 'application/vnd.apache.avro;version=1.9.0'
+        payload:
+          $ref: 'local/path/to/file/user'
+`
+
+const { document } = await parser.parse(asyncapiWithAvro);
 ```
 
 ### Usage with Confluent Schema Registry
@@ -106,10 +218,11 @@ await parser.parse(asyncapiWithAvro)
 #### Use them on your AsyncAPI document
 
 ```js
-const parser = require('@asyncapi/parser')
-const avroSchemaParser = require('@asyncapi/avro-schema-parser')
+import { Parser } from '@asyncapi/parser';
+import { AvroSchemaParser } from '@asyncapi/avro-schema-parser';
 
-parser.registerSchemaParser(avroSchemaParser)
+const parser = new Parser();
+parser.registerSchemaParser(AvroSchemaParser()); 
 
 const asyncapiWithAvro = `
 asyncapi: 2.0.0
@@ -125,21 +238,45 @@ channels:
           $ref: 'https://LY422RBU2HN6JQ5T:+f8wz9a0iM06AX7xfwbzSM9YPw/JIkr22Cvl5EKT5Hb1d/nz5nOpbXV/vZC+Iz5c@example.europe-west3.gcp.confluent.cloud/subjects/test/versions/1/schema'
 `
 
-await parser.parse(asyncapiWithAvro)
+const { document } = await parser.parse(asyncapiWithAvro);
+```
+
+```js
+const { Parser } = require('@asyncapi/parser');
+const { AvroSchemaParser } = require('@asyncapi/raml-dt-schema-parser');
+
+const parser = new Parser();
+parser.registerSchemaParser(AvroSchemaParser()); 
+
+const asyncapiWithAvro = `
+asyncapi: 2.0.0
+info:
+  title: Example with Avro
+  version: 0.1.0
+channels:
+  example:
+    publish:
+      message:
+        schemaFormat: 'application/vnd.apache.avro;version=1.9.0'
+        payload:
+          $ref: 'https://LY422RBU2HN6JQ5T:+f8wz9a0iM06AX7xfwbzSM9YPw/JIkr22Cvl5EKT5Hb1d/nz5nOpbXV/vZC+Iz5c@example.europe-west3.gcp.confluent.cloud/subjects/test/versions/1/schema'
+`
+
+const { document } = await parser.parse(asyncapiWithAvro);
 ```
 
 ## Features
 
 ### Validation of Avro schemas
 
-Avro schemas included in parsed AsyncAPI documents are validated using [avsc](https://www.npmjs.com/package/avsc). Invalid Avro schemas will cause the `parse` function to reject the promise, with an error that explains the problem.
+Avro schemas included in parsed AsyncAPI documents are validated using [avsc](https://www.npmjs.com/package/avsc). The `parser.validate(...)` function returns all validation issues.
 
 ```js
-const assert = require('assert');
-const parser = require('@asyncapi/parser');
-const avroSchemaParser = require('./index');
+import { Parser } from '@asyncapi/parser';
+import { AvroSchemaParser } from '@asyncapi/avro-schema-parser';
 
-parser.registerSchemaParser(avroSchemaParser);
+const parser = new Parser();
+parser.registerSchemaParser(AvroSchemaParser()); 
 
 const asyncapiWithInvalidAvro = `
 asyncapi: 2.0.0
@@ -155,12 +292,41 @@ channels:
           type: notAValidAvroType
 `;
 
-parser.parse(asyncapiWithInvalidAvro)
-  .catch(err => {
-    assert.strictEqual(err.message,
-      'unknown type: "notAValidAvroType"');
-  });
+const diagnostics = await parser.validate(doc);
+// Custom schema issues are stored by the code "asyncapi-schemas-v2"
+const avroDiagnostics = diagnostics.filter(d => d.code === 'asyncapi-schemas-v2');
+console.log(avroDiagnostics);
 ```
+
+```js
+const { Parser } = require('@asyncapi/parser');
+const { AvroSchemaParser } = require('@asyncapi/raml-dt-schema-parser');
+
+const parser = new Parser();
+parser.registerSchemaParser(AvroSchemaParser()); 
+
+const asyncapiWithInvalidAvro = `
+asyncapi: 2.0.0
+info:
+  title: Example with Avro
+  version: 0.1.0
+channels:
+  example:
+    publish:
+      message:
+        schemaFormat: 'application/vnd.apache.avro;version=1.9.0'
+        payload:
+          type: notAValidAvroType
+`;
+
+const diagnostics = await parser.validate(doc);
+// Custom schema issues are stored by the code "asyncapi-schemas-v2"
+const avroDiagnostics = diagnostics.filter(d => d.code === 'asyncapi-schemas-v2');
+console.log(avroDiagnostics);
+```
+
+> **Note**
+> `parser.parse(...)` function also returns `diagnostics` data with all the validation issues.
 
 ### Support of required attributes
 
