@@ -1,6 +1,6 @@
 {
   "name": "@asyncapi/avro-schema-parser",
-  "version": "3.0.2",
+  "version": "3.0.3",
   "description": "An AsyncAPI schema parser for Avro 1.x schemas.",
   "scripts": {
     "build": "npm run build:esm && npm run build:cjs",
@@ -44,7 +44,7 @@
     "README.md"
   ],
   "dependencies": {
-    "@asyncapi/parser": "^2.0.3",
+    "@asyncapi/parser": "^2.1.0",
     "@types/json-schema": "^7.0.11",
     "avsc": "^5.7.6"
   },
