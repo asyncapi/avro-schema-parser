@@ -298,6 +298,11 @@ async function processRecordSchema(avroDefinition: AvroSchema, recordCache: Reco
     // If the type is a sub schema it will have been stored in the cache.
     if (recordCache[field.type]) {
       propsMap.set(field.name, recordCache[field.type]);
+
+      // check for cached fields that should be marked as required
+      const cachedProps = propsMap.get(field.name);
+      const cached = { name: field.name, ...cachedProps };
+      requiredAttributesMapping(cached, jsonSchema, cached.default !== undefined);
     } else {
       const def = await convertAvroToJsonSchema(field.type, false, recordCache);
 
