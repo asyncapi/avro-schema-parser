@@ -44,7 +44,7 @@
     "README.md"
   ],
   "dependencies": {
-    "@asyncapi/parser": "^3.0.4",
+    "@asyncapi/parser": "^3.0.5",
     "@types/json-schema": "^7.0.11",
     "avsc": "^5.7.6"
   },
