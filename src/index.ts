@@ -90,18 +90,49 @@ function commonAttributesMapping(avroDefinition: AvroSchema, jsonSchema: SpecTyp
   }
 }
 
-function getFullyQualifiedName(avroDefinition: AvroSchema) {
-  let name;
+function getFullyQualifiedName(avroDefinition: AvroSchema | string) {
+  if (typeof avroDefinition === 'string') {
+    return avroDefinition;
+  }
+  if (!avroDefinition || typeof avroDefinition !== 'object') {
+    return undefined;
+  }
 
   if (avroDefinition.name) {
     if (avroDefinition.namespace) {
-      name = `${avroDefinition.namespace}.${avroDefinition.name}`;
-    } else {
-      name = avroDefinition.name;
+      return `${avroDefinition.namespace}.${avroDefinition.name}`;
+    }
+    return avroDefinition.name;
+  }
+
+  // Named reference wrapped as { type: 'fullname' }, e.g. { type: 'example.field.ExampleField' }
+  if (typeof avroDefinition.type === 'string' && !typeMappings[avroDefinition.type]) {
+    const refType = avroDefinition.type;
+    if (!['record', 'enum', 'fixed', 'array', 'map'].includes(refType)) {
+      return refType;
     }
   }
 
-  return name;
+  return undefined;
+}
+
+function cloneSchema<T>(schema: T): T {
+  return JSON.parse(JSON.stringify(schema));
+}
+
+function resolveCachedRecord(
+  name: string | undefined,
+  recordCache: Record<string, SpecTypesV2.AsyncAPISchemaDefinition>,
+  enclosingNamespace?: string,
+): SpecTypesV2.AsyncAPISchemaDefinition | undefined {
+  if (!name) return undefined;
+  if (recordCache[name]) return recordCache[name];
+  // Avro resolves unqualified names against the enclosing namespace.
+  if (enclosingNamespace && !name.includes('.')) {
+    const qualified = `${enclosingNamespace}.${name}`;
+    if (recordCache[qualified]) return recordCache[qualified];
+  }
+  return undefined;
 }
 
 /**
@@ -211,12 +242,12 @@ function cacheAvroRecordDef(cache: { [key:string]: AsyncAPISchema }, key: string
   }
 }
 
-async function convertAvroToJsonSchema(avroDefinition: AvroSchema , isTopLevel: boolean, recordCache: Map<string, SpecTypesV2.AsyncAPISchemaDefinition> | any = {}): Promise<SpecTypesV2.AsyncAPISchemaDefinition> {
+async function convertAvroToJsonSchema(avroDefinition: AvroSchema , isTopLevel: boolean, recordCache: Map<string, SpecTypesV2.AsyncAPISchemaDefinition> | any = {}, enclosingNamespace?: string): Promise<SpecTypesV2.AsyncAPISchemaDefinition> {
   let jsonSchema: SpecTypesV2.AsyncAPISchemaDefinition = {};
   const isUnion = Array.isArray(avroDefinition);
 
   if (isUnion) {
-    return processUnionSchema(jsonSchema, avroDefinition, isTopLevel, recordCache);
+    return processUnionSchema(jsonSchema, avroDefinition, isTopLevel, recordCache, enclosingNamespace);
   }
 
   // Avro definition can be a string (e.g. "int")
@@ -246,11 +277,11 @@ async function convertAvroToJsonSchema(avroDefinition: AvroSchema , isTopLevel: 
     break;
   }
   case 'map': {
-    jsonSchema.additionalProperties = await convertAvroToJsonSchema(avroDefinition.values, false);
+    jsonSchema.additionalProperties = await convertAvroToJsonSchema(avroDefinition.values, false, recordCache, enclosingNamespace);
     break;
   }
   case 'array': {
-    jsonSchema.items = await convertAvroToJsonSchema(avroDefinition.items, false);
+    jsonSchema.items = await convertAvroToJsonSchema(avroDefinition.items, false, recordCache, enclosingNamespace);
     break;
   }
   case 'enum': {
@@ -263,15 +294,17 @@ async function convertAvroToJsonSchema(avroDefinition: AvroSchema , isTopLevel: 
     break;
   }
   case 'record': {
-    const propsMap = await processRecordSchema(avroDefinition, recordCache, jsonSchema);
-    cacheAvroRecordDef(recordCache, getFullyQualifiedName(avroDefinition), propsMap);
+    const recordNamespace = (avroDefinition.namespace as string) || enclosingNamespace;
+    const propsMap = await processRecordSchema(avroDefinition, recordCache, jsonSchema, recordNamespace);
     jsonSchema.properties = Object.fromEntries(propsMap.entries());
+    cacheAvroRecordDef(recordCache, getFullyQualifiedName(avroDefinition), jsonSchema);
     break;
   }
   default: {
-    const cachedRecord = recordCache[getFullyQualifiedName(avroDefinition)];
+    const refName = getFullyQualifiedName(avroDefinition);
+    const cachedRecord = resolveCachedRecord(refName, recordCache, enclosingNamespace);
     if (cachedRecord) {
-      jsonSchema = cachedRecord;
+      jsonSchema = cloneSchema(cachedRecord);
     }
     break;
   }
@@ -292,27 +325,19 @@ async function convertAvroToJsonSchema(avroDefinition: AvroSchema , isTopLevel: 
  * @param jsonSchema the schema for the record.
  * @returns {Promise<Map<string, any>>}
  */
-async function processRecordSchema(avroDefinition: AvroSchema, recordCache: Record<string, SpecTypesV2.AsyncAPISchemaDefinition>, jsonSchema: SpecTypesV2.AsyncAPISchemaDefinition): Promise<Map<string, any>> {
+async function processRecordSchema(avroDefinition: AvroSchema, recordCache: Record<string, SpecTypesV2.AsyncAPISchemaDefinition>, jsonSchema: SpecTypesV2.AsyncAPISchemaDefinition, enclosingNamespace?: string): Promise<Map<string, any>> {
   const propsMap = new Map<string, any>();
   for (const field of avroDefinition.fields) {
-    // If the type is a sub schema it will have been stored in the cache.
-    if (recordCache[field.type]) {
-      propsMap.set(field.name, recordCache[field.type]);
+    const def = await convertAvroToJsonSchema(field.type, false, recordCache, enclosingNamespace);
 
-      // check for cached fields that should be marked as required
-      const cachedProps = propsMap.get(field.name);
-      const cached = { name: field.name, ...cachedProps };
-      requiredAttributesMapping(cached, jsonSchema, cached.default !== undefined);
-    } else {
-      const def = await convertAvroToJsonSchema(field.type, false, recordCache);
+    requiredAttributesMapping(field, jsonSchema, field.default !== undefined);
+    commonAttributesMapping(field, def, recordCache);
+    additionalAttributesMapping(field.type, field, def);
 
-      requiredAttributesMapping(field, jsonSchema, field.default !== undefined);
-      commonAttributesMapping(field, def, recordCache);
-      additionalAttributesMapping(field.type, field, def);
-
-      propsMap.set(field.name, def);
-      // If there is a name for the sub record cache it under the name.
-      const qualifiedFieldName = getFullyQualifiedName(field.type);
+    propsMap.set(field.name, def);
+    // If there is a name for the sub record cache it under the name.
+    const qualifiedFieldName = getFullyQualifiedName(field.type);
+    if (qualifiedFieldName && !typeMappings[qualifiedFieldName] && Object.keys(def).length > 0) {
       cacheAvroRecordDef(recordCache, qualifiedFieldName, def);
     }
   }
@@ -329,12 +354,12 @@ async function processRecordSchema(avroDefinition: AvroSchema, recordCache: Reco
  * @param recordCache the cache of previously processed record types
  * @returns {Promise<AsyncAPISchema>} the mutated jsonSchema that was provided to the function
  */
-async function processUnionSchema(jsonSchema: SpecTypesV2.AsyncAPISchemaDefinition, avroDefinition: AvroSchema, isTopLevel: boolean, recordCache: Record<string, SpecTypesV2.AsyncAPISchemaDefinition>): Promise<SpecTypesV2.AsyncAPISchemaDefinition> {
+async function processUnionSchema(jsonSchema: SpecTypesV2.AsyncAPISchemaDefinition, avroDefinition: AvroSchema, isTopLevel: boolean, recordCache: Record<string, SpecTypesV2.AsyncAPISchemaDefinition>, enclosingNamespace?: string): Promise<SpecTypesV2.AsyncAPISchemaDefinition> {
   jsonSchema.oneOf = [];
   let nullDef = null;
   
   for (const avroDef of avroDefinition as AvroSchema[]) {
-    const def = await convertAvroToJsonSchema(avroDef, isTopLevel, recordCache);
+    const def = await convertAvroToJsonSchema(avroDef, isTopLevel, recordCache, enclosingNamespace);
     // avroDef can be { type: 'int', default: 1 } and this is why avroDef.type has priority here
     const defType = avroDef.type || avroDef;
     // To prefer non-null values in the examples skip null definition here and push it as the last element after loop
@@ -343,7 +368,9 @@ async function processUnionSchema(jsonSchema: SpecTypesV2.AsyncAPISchemaDefiniti
     } else {
       jsonSchema.oneOf.push(def);
       const qualifiedName = getFullyQualifiedName(avroDef);
-      cacheAvroRecordDef(recordCache, qualifiedName, def);
+      if (qualifiedName && !typeMappings[qualifiedName] && Object.keys(def).length > 0) {
+        cacheAvroRecordDef(recordCache, qualifiedName, def);
+      }
     }
   }
   if (nullDef) jsonSchema.oneOf.push(nullDef);
