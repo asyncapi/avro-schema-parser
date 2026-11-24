@@ -26,13 +26,13 @@ const inputWithInvalidAvro = toParseInput(fs.readFileSync(path.resolve(__dirname
 const inputWithBrokenAvro = toParseInput(fs.readFileSync(path.resolve(__dirname, './documents/asyncapi-avro-broken.json'), 'utf8'));
 
 const inputWithSubAvro190 = toParseInput(fs.readFileSync(path.resolve(__dirname, './documents/asyncapi-avro-111-1.9.0.json'), 'utf8'));
-const outputWithSubAvro190 = '{"type":"object","required":["metadata","auth_code","refresh_token","triggered_by"],"properties":{"metadata":{"type":"object","x-parser-schema-id":"com.foo.EventMetadata","required":["id","timestamp"],"properties":{"id":{"type":"string","format":"uuid","description":"Unique identifier for this specific event"},"timestamp":{"type":"integer","minimum":-9223372036854776000,"maximum":9223372036854776000,"description":"Instant the event took place (not necessary when it was published)"},"correlation_id":{"oneOf":[{"type":"string","format":"uuid"},{"type":"null"}],"description":"id of the event that resulted in this\\nevent being published (optional)","default":null},"publisher_context":{"oneOf":[{"type":"object","additionalProperties":{"type":"string"}},{"type":"null"}],"description":"optional set of key-value pairs of context to be echoed back\\nin any resulting message (like a richer\\ncorrelationId.\\n\\nThese values are likely only meaningful to the publisher\\nof the correlated event","default":null}},"description":"Metadata to be associated with every published event"},"auth_code":{"type":"object","x-parser-schema-id":"com.foo.EncryptedString","required":["value","nonce","key"],"properties":{"value":{"type":"string","description":"A sequence of bytes that has been AES encrypted in CTR mode."},"nonce":{"type":"string","description":"A nonce, used by the CTR encryption mode for our encrypted value. Not encrypted, not a secret."},"key":{"type":"string","description":"An AES key, used to encrypt the value field, that has itself been encrypted using RSA."}},"description":"Encrypted auth_code received when user authorizes the app."},"refresh_token":{"type":"object","required":["value","nonce","key"],"properties":{"value":{"type":"string","description":"A sequence of bytes that has been AES encrypted in CTR mode."},"nonce":{"type":"string","description":"A nonce, used by the CTR encryption mode for our encrypted value. Not encrypted, not a secret."},"key":{"type":"string","description":"An AES key, used to encrypt the value field, that has itself been encrypted using RSA."}},"description":"Encrypted auth_code received when user authorizes the app.","x-parser-schema-id":"com.foo.EncryptedString"},"triggered_by":{"type":"string","format":"uuid","description":"ID of the user who triggered this event."}},"description":"An example schema to illustrate the issue","x-parser-schema-id":"com.foo.connections.ConnectionRequested"}';
+const outputWithSubAvro190 = '{"type":"object","required":["metadata","auth_code","refresh_token","triggered_by"],"properties":{"metadata":{"type":"object","required":["id","timestamp"],"properties":{"id":{"type":"string","format":"uuid","description":"Unique identifier for this specific event"},"timestamp":{"type":"integer","minimum":-9223372036854776000,"maximum":9223372036854776000,"description":"Instant the event took place (not necessary when it was published)"},"correlation_id":{"oneOf":[{"type":"string","format":"uuid"},{"type":"null"}],"description":"id of the event that resulted in this\\nevent being published (optional)","default":null},"publisher_context":{"oneOf":[{"type":"object","additionalProperties":{"type":"string"}},{"type":"null"}],"description":"optional set of key-value pairs of context to be echoed back\\nin any resulting message (like a richer\\ncorrelationId.\\n\\nThese values are likely only meaningful to the publisher\\nof the correlated event","default":null}},"description":"Metadata to be associated with every published event","x-parser-schema-id":"com.foo.EventMetadata"},"auth_code":{"type":"object","required":["value","nonce","key"],"properties":{"value":{"type":"string","description":"A sequence of bytes that has been AES encrypted in CTR mode."},"nonce":{"type":"string","description":"A nonce, used by the CTR encryption mode for our encrypted value. Not encrypted, not a secret."},"key":{"type":"string","description":"An AES key, used to encrypt the value field, that has itself been encrypted using RSA."}},"description":"Encrypted auth_code received when user authorizes the app.","x-parser-schema-id":"com.foo.EncryptedString"},"refresh_token":{"type":"object","required":["value","nonce","key"],"properties":{"value":{"type":"string","description":"A sequence of bytes that has been AES encrypted in CTR mode."},"nonce":{"type":"string","description":"A nonce, used by the CTR encryption mode for our encrypted value. Not encrypted, not a secret."},"key":{"type":"string","description":"An AES key, used to encrypt the value field, that has itself been encrypted using RSA."}},"description":"Encrypted refresh_token generated by using clientId and clientSecret.","x-parser-schema-id":"com.foo.EncryptedString"},"triggered_by":{"type":"string","format":"uuid","description":"ID of the user who triggered this event."}},"description":"An example schema to illustrate the issue","x-parser-schema-id":"com.foo.connections.ConnectionRequested"}';
 
 const inputWithOneOfReferenceAvro190 = toParseInput(fs.readFileSync(path.resolve(__dirname, './documents/asyncapi-avro-113-1.9.0.json'), 'utf8'));
 const outputWithOneOfReferenceAvro190 = '{"oneOf":[{"type":"object","required":["streetaddress","city"],"properties":{"streetaddress":{"type":"string"},"city":{"type":"string"}},"x-parser-schema-id":"com.example.Address"},{"type":"object","required":["firstname","lastname","address"],"properties":{"firstname":{"type":"string"},"lastname":{"type":"string"},"address":{"type":"object","required":["streetaddress","city"],"properties":{"streetaddress":{"type":"string"},"city":{"type":"string"}},"x-parser-schema-id":"com.example.Address"}},"x-parser-schema-id":"com.example.Person"}]}';
 
 const inputWithRecordReferencesAvro190 = toParseInput(fs.readFileSync(path.resolve(__dirname, './documents/asyncapi-avro-148-1.9.0.json'), 'utf8'));
-const outputWithRecordReferencesAvro190 = '{"type":"object","required":["Record1","simpleField"],"properties":{"Record1":{"type":"object","required":["string"],"properties":{"string":{"type":"string","description":"field in Record1"}},"description":"Reused in other fields","x-parser-schema-id":"Record1"},"FieldThatDefineRecordInUnion":{"oneOf":[{"type":"object","required":["number"],"properties":{"number":{"type":"integer","minimum":0,"maximum":2,"description":"field in RecordDefinedInUnion"}},"x-parser-schema-id":"com.example.model.RecordDefinedInUnion"},{"type":"null"}],"default":null},"FieldThatReuseRecordDefinedInUnion":{"oneOf":[{},{"type":"null"}],"default":null},"FieldThatReuseRecord1":{"oneOf":[{},{"type":"null"}],"default":null},"simpleField":{"type":"string"}},"x-parser-schema-id":"com.example.RecordWithReferences"}';
+const outputWithRecordReferencesAvro190 = '{"type":"object","required":["Record1","simpleField"],"properties":{"Record1":{"type":"object","required":["string"],"properties":{"string":{"type":"string","description":"field in Record1"}},"description":"Reused in other fields","x-parser-schema-id":"Record1"},"FieldThatDefineRecordInUnion":{"oneOf":[{"type":"object","required":["number"],"properties":{"number":{"type":"integer","minimum":0,"maximum":2,"description":"field in RecordDefinedInUnion"}},"x-parser-schema-id":"com.example.model.RecordDefinedInUnion"},{"type":"null"}],"default":null},"FieldThatReuseRecordDefinedInUnion":{"oneOf":[{"type":"object","required":["number"],"properties":{"number":{"type":"integer","minimum":0,"maximum":2,"description":"field in RecordDefinedInUnion"}},"x-parser-schema-id":"com.example.model.RecordDefinedInUnion"},{"type":"null"}],"default":null},"FieldThatReuseRecord1":{"oneOf":[{"type":"object","required":["string"],"properties":{"string":{"type":"string","description":"field in Record1"}},"description":"Reused in other fields","x-parser-schema-id":"Record1"},{"type":"null"}],"default":null},"simpleField":{"type":"string"}},"x-parser-schema-id":"com.example.RecordWithReferences"}';
 
 const inputWithValidAsyncAPI = fs.readFileSync(path.resolve(__dirname, './documents/valid-asyncapi.yaml'), 'utf8');
 const inputWithInvalidAsyncAPI = fs.readFileSync(path.resolve(__dirname, './documents/invalid-asyncapi.yaml'), 'utf8');
@@ -359,6 +359,68 @@ describe('avroToJsonSchema()', function () {
       type: 'object',
       'x-parser-schema-id': 'MyName'
     });
+  });
+
+  it('should resolve fully-qualified named references in array items and direct fields (asyncapi-react#1154)', async function () {
+    const result = await avroToJsonSchema({
+      name: 'Example',
+      namespace: 'example.message',
+      type: 'record',
+      fields: [
+        {
+          name: 'example1',
+          type: {
+            type: 'array',
+            items: {
+              name: 'ExampleField',
+              namespace: 'example.field',
+              type: 'record',
+              fields: [{name: 'test', type: 'string'}],
+            },
+          },
+        },
+        {name: 'example2', type: {type: 'array', items: 'example.field.ExampleField'}},
+        {name: 'example3', type: 'example.field.ExampleField'},
+      ],
+    } as any);
+    const expectedField = {
+      type: 'object',
+      required: ['test'],
+      properties: {test: {type: 'string'}},
+      'x-parser-schema-id': 'example.field.ExampleField',
+    };
+    expect(result).toEqual({
+      type: 'object',
+      required: ['example1', 'example2', 'example3'],
+      properties: {
+        example1: {type: 'array', items: expectedField},
+        example2: {type: 'array', items: expectedField},
+        example3: expectedField,
+      },
+      'x-parser-schema-id': 'example.message.Example',
+    });
+  });
+
+  it('should resolve named references in map values and unions with independent metadata', async function () {
+    const result = await avroToJsonSchema({
+      name: 'Root',
+      namespace: 'com.example',
+      type: 'record',
+      fields: [
+        {name: 'a', type: {name: 'Item', namespace: 'com.example', type: 'record', fields: [{name: 'x', type: 'string'}]}},
+        {name: 'b', type: {type: 'map', values: 'com.example.Item'}},
+        {name: 'c', type: ['null', 'com.example.Item'], default: null},
+      ],
+    } as any);
+    const expectedItem = {
+      type: 'object',
+      required: ['x'],
+      properties: {x: {type: 'string'}},
+      'x-parser-schema-id': 'com.example.Item',
+    };
+    expect(result.properties.a).toEqual(expectedItem);
+    expect(result.properties.b).toEqual({type: 'object', additionalProperties: expectedItem});
+    expect(result.properties.c).toEqual({oneOf: [expectedItem, {type: 'null'}], default: null});
   });
 });
 
